@@ -16,17 +16,18 @@ public class Ntbea {
 	
 	private Random rand;
 	
-	private int nbEvals = 500; //Number total of evaluations allowed
-	private int numNeighbors = 50;
+	private int nbEvals = 2000; //Number total of evaluations allowed
+	private int numNeighbors = 100;
 
 
-	private final int NUM_THREADS = 1;
+	private final int NUM_THREADS = 4;
 	
 	public Ntbea() {
 		rand = new Random();
 	}
 
 
+	@SuppressWarnings("unused")
 	public Action[] searchBestCombination(GameState state) {
 
 		
@@ -44,8 +45,8 @@ public class Ntbea {
 	    }
 		copia = state.copy();
 		//for (int j = 0; j<repeticiones; j++) {
-			
-			ZonaIntercambio z = new ZonaIntercambio(current, copia);
+		ZonaIntercambio z = new ZonaIntercambio(current, copia);
+		if(NUM_THREADS >1) {	
 			Thread[] hilos = new MiHebra[NUM_THREADS];
 			for(int i=0; i<NUM_THREADS; i++) {
 				hilos[i] = new MiHebra(i, NUM_THREADS, z, copia, nbEvals, current);
@@ -60,6 +61,11 @@ public class Ntbea {
 					e.printStackTrace();
 				}
 			}
+		}
+		else {
+			MiHebra h = new MiHebra(0, 1, z, copia, nbEvals, current);
+			h.run();
+		}
 			/*System.out.println("Aquí llego");
 			LModel modelo = z.getLModel();
 			Set<Action[]> completo = modelo.getBestActionsSet();
@@ -72,7 +78,7 @@ public class Ntbea {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}*/
-			current = z.getBest();
+		current = z.getBest();
 
 		//}
 		return current;
@@ -166,6 +172,7 @@ public class Ntbea {
 			this.current = current;
 			this.value = Greedy.evalActions(state, current);
 			this.lModel = new LModel(5);
+			
 			this.lModel.addToLModel(current, value);
 			this.copia = state.copy();
 			
@@ -218,9 +225,9 @@ public class Ntbea {
 		
 		
 		
-		public synchronized Action[] getCurrent() {
+		/*public synchronized Action[] getCurrent() {
 			return lModel.getBestActions();
-		}
+		}*/
 
 		public synchronized GameState getState() {
 			return copia;

@@ -75,7 +75,7 @@ public class Prueba1 {
 	private static void AIVsAI(boolean guardar) {
 		
 		int budget = 4000; // 4 sec for AI's
-		AI p2= guardar? new MyRandomAgent(z) : new MyRandomAgent();
+		AI p2= guardar? new MyGreedyAgent(z) : new MyGreedyAgent();
 		//AI p2 = new RandomAI(RAND_METHOD.BRUTE);
 		//AI p2 = new GreedyActionAI(new HeuristicEvaluator(false));
 		//AI p2 = new GreedyTurnAI(new HeuristicEvaluator(false), budget);
