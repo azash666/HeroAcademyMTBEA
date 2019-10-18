@@ -45,6 +45,7 @@ public class Greedy {
 		return value;
 	}
 
+	
 	private static int evalFuncion(GameState state) {
 		Unit[][] units = state.units;
 		HaMap mapa = state.map;
@@ -104,7 +105,10 @@ public class Greedy {
 					individualValue += equipEval*(aux.hp==0?0:2);
 					individualValue += squareEval*(aux.hp==0?-1:1);
 					//individualValue += (aux.p1Owner!=state.p1Turn&&nombre.equals("CRYSTAL")&&aux.hp<=0)?10000:0;
-					value+=individualValue*(aux.p1Owner==state.p1Turn?1:-1.5);
+					boolean perteneciaAux = aux.p1Owner;
+					boolean turno = state.p1Turn;
+					
+					value+=individualValue*(aux.p1Owner==state.p1Turn?1:-1);
 					
 				}
 			}
@@ -117,7 +121,7 @@ public class Greedy {
 		boolean initialized = false;
 		List<Action> actions = new LinkedList<Action>();
 		state.possibleActions(actions);
-		if(actions.size()<20) {
+		//if(actions.size()<20) {
 			for (Action i : actions) {
 				if (!initialized) {
 					action = i;
@@ -133,7 +137,7 @@ public class Greedy {
 				}
 			}
 			return action;
-		}else {
+		/*}else {
 			Thread[] hilos = new Thread[NUM_HILOS];
 			ZonaIntercambio z = new ZonaIntercambio();
 			for (int i=0; i<NUM_HILOS; i++) {
@@ -148,7 +152,7 @@ public class Greedy {
 				}
 			}
 			return z.getAccion();
-		}
+		}*/
 	}
 	
 
@@ -223,11 +227,11 @@ public class Greedy {
 
 	public static int evalActions(GameState state, Action[] acciones) {
 		GameState copia = state.copy();
+		
 		for (Action act : acciones) {
 			copia.update(act);
 		}
 		int val = evalFuncion(copia);
-		
-		return val;
+		return -val;
 	}
 }

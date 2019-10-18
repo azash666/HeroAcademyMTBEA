@@ -9,18 +9,19 @@ import java.util.concurrent.TimeUnit;
 
 import action.Action;
 import ai.myTest.MyGreedy.Greedy;
+import ai.myTest.MyNtbea2.LModelTest;
 import game.GameState;
 import util.Auxiliares;
 
 public class Ntbea {
 	
-	private Random rand;
+	public Random rand;
 	
-	private int nbEvals = 2000; //Number total of evaluations allowed
-	private int numNeighbors = 100;
+	public int nbEvals = 5; //Number total of evaluations allowed
+	public int numNeighbors = 5;
 
 
-	private final int NUM_THREADS = 4;
+	public final int NUM_THREADS = 1;
 	
 	public Ntbea() {
 		rand = new Random();
@@ -66,25 +67,16 @@ public class Ntbea {
 			MiHebra h = new MiHebra(0, 1, z, copia, nbEvals, current);
 			h.run();
 		}
-			/*System.out.println("Aquí llego");
-			LModel modelo = z.getLModel();
-			Set<Action[]> completo = modelo.getBestActionsSet();
-			for (Action[] a : completo) {
-				Auxiliares.imprime(a);
-			}
-			try {
-				TimeUnit.SECONDS.sleep(5);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
+			
 		current = z.getBest();
-
-		//}
+		//Auxiliares.imprime(z.lModel);
+		Auxiliares.imprime(current);
+		System.out.println(Greedy.evalActions(state, current));
+		//throw new RuntimeException();
 		return current;
 	}
 
-	private Set<Action[]> neighbors(GameState state, Action[] current, int numberOfNeighbors, double mutationProbability, boolean flipOnce) {
+	public Set<Action[]> neighbors(GameState state, Action[] current, int numberOfNeighbors, double mutationProbability_A_BORRAR, boolean flipOnce) {
 		Set<Action[]> population= new HashSet<Action[]>();
 		for (int k=0; k<numberOfNeighbors; k++) {
 			GameState copia = state.copy();
@@ -92,7 +84,10 @@ public class Ntbea {
 			List<Action> acciones = new LinkedList<Action>();
 			int i=flipOnce?rand.nextInt(current.length):0;
 			for (int j=0; j<current.length; j++) {
+				//*******************************
+				//acciones = current[j].possibleActions();
 			    copia.possibleActions(acciones);
+				//*******************************
 			    if(acciones.size()<1) break;
 				if (j==i) {
 					Action aux2 = acciones.get(rand.nextInt(acciones.size()));
@@ -103,6 +98,7 @@ public class Ntbea {
 						neighbor[j] = acciones.get(rand.nextInt(acciones.size()));//Greedy.searchBestAction(copia);
 				}
 				copia.update(neighbor[j]);
+				
 			}
 			population.add(neighbor);
 		}
@@ -130,7 +126,7 @@ public class Ntbea {
 			this.copia= z.getState();
 			this.nbEvals = nbEvals;
 			this.current = current;
-			this.value = Greedy.evalActions(this.copia, this.current);
+			//this.value = Greedy.evalActions(this.copia, this.current);
 			this.lModel = z.getLModel();
 		}
 		
@@ -164,16 +160,12 @@ public class Ntbea {
 	
 	class ZonaIntercambio{
 		private Action[] current;
-		private double value;
 		private LModel lModel;
 		private GameState copia;
 		
 		public ZonaIntercambio(Action[] current, GameState state) {
 			this.current = current;
-			this.value = Greedy.evalActions(state, current);
 			this.lModel = new LModel(5);
-			
-			this.lModel.addToLModel(current, value);
 			this.copia = state.copy();
 			
 		}
@@ -187,9 +179,10 @@ public class Ntbea {
 		}
 
 		public synchronized Action[] getBest() {
-			Set<Action[]> todo = lModel.getBestActionsSet();
-			Set<Action[]> todo2 = lModel.getBestActionsSet();
-			for (Action[] acciones : todo) {
+			Set<Object[]> todo = lModel.getBestActionsSet();
+			Set<Object[]> todo2 = lModel.getBestActionsSet();
+			for (Object[] objetos : todo) {
+				Action[] acciones = (Action[]) objetos;
 				Set<Action[]> auxiliar = neighbors(copia, acciones, numNeighbors, 0.5, true);
 				for (Action[] vecino : auxiliar) {
 					todo2.add(vecino);
@@ -199,35 +192,22 @@ public class Ntbea {
 			Action[] current = this.current;
 			double value = 0;
 
-			
-			for (Action[] acciones : todo2) {
+			for (Object[] acciones : todo2) {
 				if(vacio) {
 					vacio=false;
-					current = acciones;
+					current = (Action[]) acciones;
 					value = lModel.puntua(current, false);
 				}else {
 					double aux = lModel.puntua(acciones, false);
 					if(aux>value) {
-						current = acciones;
+						current = (Action[]) acciones;
 						value = aux;
 					}
 				}
 			}
-			//Auxiliares.imprime(lModel);
-			/*try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
+			
 			return current;
 		}
-		
-		
-		
-		/*public synchronized Action[] getCurrent() {
-			return lModel.getBestActions();
-		}*/
 
 		public synchronized GameState getState() {
 			return copia;

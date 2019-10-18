@@ -94,7 +94,7 @@ public class MyGreedyAgent implements AI {
 	@Override
 	public String title() {
 		// TODO Auto-generated method stub
-		return "My Fabulous AI";
+		return "My Greedy Agent";
 	}
 	
 }

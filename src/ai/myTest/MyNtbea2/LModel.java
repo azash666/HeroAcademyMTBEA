@@ -76,42 +76,34 @@ public class LModel {
 		for (int i=0; i<current.length; i++) {
 			//Auxiliares.imprime(current);
 			Object action = current[i];
-			//if (Action== null) break;
+			//if (Object== null) break;
 			String hash = action.toString();
-			double media = mediaIndividual.get(i)*individual.get(i).size();
 			if (individual.get(i).containsKey(hash)) {
-				double newvalue;
-				media = media-individual.get(i).get(hash);
-				individual.get(i).put(hash, (newvalue=((individual.get(i).get(hash)*visitasIndividual.get(i).get(hash)+value)/(visitasIndividual.get(i).get(hash)+1))));
+				
+				individual.get(i).put(hash, (((individual.get(i).get(hash)*visitasIndividual.get(i).get(hash)+value)/(visitasIndividual.get(i).get(hash)+1))));
 				visitasIndividual.get(i).put(hash, visitasIndividual.get(i).get(hash)+1);
-				media = (media+newvalue);
 			}else {
 				individual.get(i).put(hash, value);
 				visitasIndividual.get(i).put(hash, 1);
-				media = (media+value);
 			}
-			cantidadIndividual.put(i, individual.get(i).size());
-			mediaIndividual.put(i,media/individual.get(i).size());
+			mediaIndividual.put(i,(mediaIndividual.get(i)*cantidadIndividual.get(i)+value)/(cantidadIndividual.get(i)+1));
+			cantidadIndividual.put(i, cantidadIndividual.get(i)+1);
 			for (int j=i+1; j<current.length; j++) {
 				int par = i*size+ j;
 				//Auxiliares.imprime(mediaParejas.keySet());
 				//System.out.println(par);
 				Object b = current[j];
 				String pair = action.toString()+ b.toString();
-				media = mediaParejas.get(par)*parejas.get(par).size();
 				if(visitasParejas.get(par).containsKey(pair)) {
-					double newvalue;
-					media = media-parejas.get(par).get(pair);
-					parejas.get(par).put(pair, newvalue=(parejas.get(par).get(pair)*visitasParejas.get(par).get(pair)+value)/(visitasParejas.get(par).get(pair)+1));
+					parejas.get(par).put(pair, (parejas.get(par).get(pair)*visitasParejas.get(par).get(pair)+value)/(visitasParejas.get(par).get(pair)+1));
 					visitasParejas.get(par).put(pair, visitasParejas.get(par).get(pair)+1);
-					media = (media+newvalue);
+					
 				}else {
 					parejas.get(par).put(pair, value);
 					visitasParejas.get(par).put(pair, 1);
-					media = (media+value);
 				}
-				mediaParejas.put(par, media/parejas.get(par).size());
-				cantidadParejas.put(par, parejas.get(par).size());
+				mediaParejas.put(par, (mediaParejas.get(par)*cantidadParejas.get(par)+value)/(cantidadParejas.get(par)+1));
+				cantidadParejas.put(par, cantidadParejas.get(par)+1);
 			}
 		}
 		String cadena = "";
@@ -121,49 +113,34 @@ public class LModel {
 		
 		diccionario.put(cadena, current);
 
-		double media = mediaCompleto*completo.size();
 		if (visitasCompleto.containsKey(cadena)) {
-			double newvalue;
-			media = media-completo.get(cadena);
-			completo.put(cadena, newvalue=(completo.get(cadena)*visitasCompleto.get(cadena)+value)/(visitasCompleto.get(cadena)+1));
+			completo.put(cadena, (completo.get(cadena)*visitasCompleto.get(cadena)+value)/(visitasCompleto.get(cadena)+1));
 			visitasCompleto.put(cadena, visitasCompleto.get(cadena)+1);
-			media = (media+newvalue);
 		}else {
 			completo.put(cadena, value);
 			visitasCompleto.put(cadena, 1);
-			media = (media+value);
 		}
-		mediaCompleto = media/completo.size();
-		cantidadCompleto=completo.size();
+		mediaCompleto = (mediaCompleto*cantidadCompleto+value)/(cantidadCompleto+1);
+		cantidadCompleto=cantidadCompleto+1;
+		
 	}
 	
 	public void combineLModel(LModel lModel) {
 		for(int i=0; i<size; i++) {
 			combineSet(lModel.individual.get(i), lModel.visitasIndividual.get(i), individual.get(i), visitasIndividual.get(i));
-			double media = 0;
-			for(String key: individual.get(i).keySet()) {
-				media+=individual.get(i).get(key);
-			}
-			mediaIndividual.put(i, media/individual.get(i).size());
-			cantidadIndividual.put(i, individual.get(i).size());
+			
+			mediaIndividual.put(i, (mediaIndividual.get(i)*cantidadIndividual.get(i)+lModel.mediaIndividual.get(i)*lModel.cantidadIndividual.get(i))/(cantidadIndividual.get(i)+lModel.cantidadIndividual.get(i)));
+			cantidadIndividual.put(i, cantidadIndividual.get(i)+lModel.cantidadIndividual.get(i));
 			for(int j=i+1; j<size; j++) {
 				int par = i*size+ j;
 				combineSet(lModel.parejas.get(par), lModel.visitasParejas.get(par), parejas.get(par), visitasParejas.get(par));
-				media = 0;
-				for(String key: parejas.get(par).keySet()) {
-					media+=parejas.get(par).get(key);
-				}
-				mediaParejas.put(par, media/parejas.get(par).size());
-				cantidadParejas.put(par, parejas.get(par).size());
+				cantidadParejas.put(par, cantidadParejas.get(par)+lModel.cantidadParejas.get(par));
 			}
 		}
 		combineSet(lModel.completo, lModel.visitasCompleto, completo, visitasCompleto);
-		double media = 0;
-		for(String key: completo.keySet()) {
-			media+=completo.get(key);
-		}
-		mediaCompleto = media/completo.size();
-		cantidadCompleto = completo.size();
+		
+		mediaCompleto = (mediaCompleto*cantidadCompleto+lModel.mediaCompleto*lModel.cantidadCompleto)/(cantidadCompleto+lModel.cantidadCompleto);
+		cantidadCompleto = cantidadCompleto+lModel.cantidadCompleto;
 		total+=lModel.total;
 		diccionario.putAll(lModel.diccionario);
 	}
@@ -173,15 +150,15 @@ public class LModel {
 	}
 	
 	public double puntua(Object[] actions, boolean explore) {
-		if(actions.length==0) return -1000000000;
 		double acm = 0;
 		Random r = new Random();
 		//1D
 		int aux=0;
 		for (Object action: actions) {
+			if(action==null) return -1000000000;
 			String a = action.toString();
 			if (individual.get(aux).containsKey(a)) acm += individual.get(aux).get(a)+(explore?2*constante*Math.sqrt(2*Math.log(total)/visitasIndividual.get(aux).get(a)):0);
-			else acm += explore?(10000000+1000*r.nextDouble()):mediaIndividual.get(aux); //Big number
+			else acm += explore?(10000000+r.nextDouble()):mediaIndividual.get(aux); //Big number
 			aux++;
 		}
 		//2D
@@ -190,7 +167,7 @@ public class LModel {
 				int par = i*size+ j;
 				String pair = actions[i].toString()+ actions[j].toString();
 				if (parejas.get(par).containsKey(pair)) acm += parejas.get(par).get(pair)+(explore?2*constante*Math.sqrt(2*Math.log(total)/visitasParejas.get(par).get(pair)):0);
-				else acm += explore?(10000000+1000*r.nextDouble()):mediaParejas.get(par); //Big number
+				else acm += explore?(10000000+r.nextDouble()):mediaParejas.get(par); //Big number
 			}
 		}
 		//FullD
@@ -199,7 +176,7 @@ public class LModel {
 			cadena = cadena + aux2.toString();
 		}
 		if (completo.containsKey(cadena)) acm += completo.get(cadena)+(explore?2*constante*Math.sqrt(2*Math.log(total)/visitasCompleto.get(cadena)):0);
-		else acm += explore?(10000000+1000*r.nextDouble()):mediaCompleto; //Big number
+		else acm += explore?(10000000+r.nextDouble()):mediaCompleto; //Big number
 		return acm/(actions.length + (actions.length*(actions.length-1))/2+1);
 	}
 
@@ -215,13 +192,13 @@ public class LModel {
 		}
 	}
 /*
-	public Action[] getBestActions() {
+	public Object[] getBestActions() {
 		boolean vacio = true;
-		Action[] current = null;
+		Object[] current = null;
 		double value = 0;
-		//Map<Action[], Double> todos = new HashMap<Action[], Double>();
+		//Map<Object[], Double> todos = new HashMap<Object[], Double>();
 		for(String key: completo.keySet()) {
-			Action[] acciones = diccionario.get(key);
+			Object[] acciones = diccionario.get(key);
 			if(vacio) {
 				current = acciones;
 				value = completo.get(key);
@@ -243,6 +220,7 @@ public class LModel {
 			//Auxiliares.imprime(diccionario.keySet());
 			devolver.add(diccionario.get(key));
 		}
+
 		return devolver;
 	}
 	

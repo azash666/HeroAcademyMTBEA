@@ -11,7 +11,7 @@ import game.GameArguments;
 
 public class Prueba1 {
 	private static GuardaNumAcciones z;
-	static int gana =0, pierde=0, empata=0, cantidad=50;
+	static int gana =0, pierde=0, empata=0, cantidad=1000;
 	final String file = "save2.txt";
 	
 	public static void main(String[] args) {
@@ -19,12 +19,12 @@ public class Prueba1 {
 		
 		//humanVsHuman();
 		//humanVsAI(false);
-		//AIVsAI(false);
-		long ini = System.currentTimeMillis();
+		AIVsAI(false);
+		/*long ini = System.currentTimeMillis();
 		for(int i=0; i<cantidad; i++) {
 			System.out.println("Partida "+(i+1));
 			//z = new ZonaIntercambio(file);
-			noGfx();
+			noGfx(i%2==1);
 			//z.close();
 			System.out.println("gana: "+gana+"   pierde: "+pierde+"   empata: "+empata);
 		}
@@ -33,13 +33,18 @@ public class Prueba1 {
 		System.out.println("Perdidas = "+pierde*100/cantidad+"%");
 		System.out.println("Empatadas = "+empata*100/cantidad+"%");
 		System.out.println("Tiempo = "+(fin-ini)+" milisegundos");
-		
+		*/
 	}
 
-	private static void noGfx() {
-		
-		AI p1 = new MyGreedyAgent();
-		AI p2 = new MyNtbeaAgent();
+	private static void noGfx(boolean revancha) {
+		AI p1, p2;
+		if(revancha) {
+			p1 = new MyNtbeaAgent();
+			p2 = new MyGreedyAgent();
+		}else {
+			p1 = new MyGreedyAgent();
+			p2 = new MyNtbeaAgent();
+		}
 		
 		GameArguments gameArgs = new GameArguments(false, p1, p2, "a", DECK_SIZE.STANDARD);
 		gameArgs.gfx = false; 
@@ -47,8 +52,8 @@ public class Prueba1 {
 		
 		game.run();
 		int num = game.state.getWinner();
-		if (num == 2) gana++;
-		else if (num==1) pierde++;
+		if (num == 2) {if(revancha) pierde++; else gana++;}
+		else if (num==1) {if(revancha) gana++; else pierde++;}
 		else empata++;
 	}
 
@@ -75,11 +80,11 @@ public class Prueba1 {
 	private static void AIVsAI(boolean guardar) {
 		
 		int budget = 4000; // 4 sec for AI's
-		AI p2= guardar? new MyGreedyAgent(z) : new MyGreedyAgent();
+		AI p2= new MyGreedyAgent();
 		//AI p2 = new RandomAI(RAND_METHOD.BRUTE);
 		//AI p2 = new GreedyActionAI(new HeuristicEvaluator(false));
 		//AI p2 = new GreedyTurnAI(new HeuristicEvaluator(false), budget);
-		AI p1 = guardar? new MyNtbeaAgent(z) : new MyNtbeaAgent();
+		AI p1 = new MyNtbeaAgent();
 		//AI p2 = new OnlineIslandEvolution(true, 100, 0.1, 0.5, budget, new HeuristicEvaluator(false));
 		
 		GameArguments gameArgs = new GameArguments(true, p1, p2, "a", DECK_SIZE.STANDARD);

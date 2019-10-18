@@ -80,7 +80,7 @@ public class Auxiliares {
 		}else{
 			System.out.print("vector: [");
 			for(Object obj: acciones) {
-				System.out.print(obj);
+				System.out.print(obj+"\t");
 			}
 			System.out.println("]");
 		}
@@ -127,8 +127,8 @@ public class Auxiliares {
 			for (String act: lmodel.individual.get(i).keySet()) {
 				System.out.println(lmodel.visitasIndividual.get(i).get(act) +" x "+act + " --> "+lmodel.individual.get(i).get(act));
 			}
-			System.out.println("Cantidad: "+lmodel.cantidadIndividual.get(i));
-			System.out.println("Media: "+lmodel.mediaIndividual.get(i));
+			System.out.print("Cantidad: "+lmodel.cantidadIndividual.get(i));
+			System.out.println("  Media: "+lmodel.mediaIndividual.get(i));
 			System.out.println();
 		}
 		System.out.println();
@@ -138,8 +138,8 @@ public class Auxiliares {
 			for (String act: lmodel.parejas.get(i).keySet()) {
 				System.out.println(lmodel.visitasParejas.get(i).get(act) +" x "+act + " --> "+lmodel.parejas.get(i).get(act));
 			}
-			System.out.println("Cantidad: "+lmodel.cantidadParejas.get(i));
-			System.out.println("Media: "+lmodel.mediaParejas.get(i));
+			System.out.print("Cantidad: "+lmodel.cantidadParejas.get(i));
+			System.out.println("  Media: "+lmodel.mediaParejas.get(i));
 			System.out.println();
 		}
 		System.out.println();
@@ -147,8 +147,8 @@ public class Auxiliares {
 		for (String act: lmodel.completo.keySet()) {
 			System.out.println(lmodel.visitasCompleto.get(act) +" x "+act + " --> "+lmodel.completo.get(act));
 		}
-		System.out.println("Cantidad: "+lmodel.cantidadCompleto);
-		System.out.println("Media: "+lmodel.mediaCompleto);
+		System.out.print("Cantidad: "+lmodel.cantidadCompleto);
+		System.out.println("  Media: "+lmodel.mediaCompleto);
 		System.out.println();
 		
 	}
