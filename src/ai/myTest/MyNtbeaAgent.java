@@ -15,8 +15,9 @@ import action.Action;
 import action.DropAction;
 import action.UnitAction;
 import ai.AI;
+import ai.evaluation.IStateEvaluator;
 import ai.myTest.MyGreedy.Greedy;
-import ai.myTest.MyNtbea2.Ntbea;
+import ai.myTest.MyNtbea3.Ntbea;
 import game.GameState;
 import model.HaMap;
 import util.Auxiliares;
@@ -34,12 +35,18 @@ public class MyNtbeaAgent implements AI {
 	private Set<Integer> tiempos = new HashSet<Integer>();
 	
 	private Ntbea ntbea;
-	public MyNtbeaAgent(GuardaNumAcciones z) {
+	private IStateEvaluator evaluator;
+	private int nbEvals;
+	private int numNeighbors;
+	/*public MyNtbeaAgent(GuardaNumAcciones z) {
 		this.guardadorDeNumAcciones= z;
 		turno = -1;
 		// TODO Auto-generated constructor stub
-	}
-	public MyNtbeaAgent() {
+	}*/
+	public MyNtbeaAgent(IStateEvaluator evaluator, int nbEvals, int numNeighbors) {
+		this.nbEvals = nbEvals;
+		this.numNeighbors = numNeighbors;
+		this.evaluator=evaluator;
 		turno = -1;
 		// TODO Auto-generated constructor stub
 	}
@@ -73,7 +80,7 @@ public class MyNtbeaAgent implements AI {
 		turno = state.turn;
 		numAccion = 0;
 		acciones = new Action[5];
-		ntbea = new Ntbea();
+		ntbea = new Ntbea(evaluator, this.nbEvals, this.numNeighbors);
 		GameState copia = state.copy();
 	    List<Action> actions = new LinkedList<Action>();
 	    copia.possibleActions(actions);

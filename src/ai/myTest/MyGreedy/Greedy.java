@@ -2,8 +2,15 @@ package ai.myTest.MyGreedy;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import action.Action;
+import ai.RandomAI;
+import ai.evaluation.HeuristicEvaluator;
+import ai.evaluation.IStateEvaluator;
+import ai.evaluation.MaterialEvaluator;
+import ai.evaluation.RolloutEvaluator;
+import ai.util.RAND_METHOD;
 import game.GameState;
 import model.Card;
 import model.HaMap;
@@ -18,6 +25,7 @@ public class Greedy {
 	static final int ASSAULT=0, DEPLOY=1, DEFENSE=2, POWER=3, NONE=-1;
 	
 	static int NUM_HILOS = 2;
+	static IStateEvaluator evaluator;
 	
 	private static int equipmentBonus(int unit, int equip) {
 		if (unit == -1) return 0;
@@ -37,16 +45,20 @@ public class Greedy {
 		return matriz[square][unit];
 	}
 	
+	public static void setEvaluator(IStateEvaluator evaluator) {
+		Greedy.evaluator = evaluator;
+	}
 	
-	public static int actAndEvalFunction(GameState state, Action action) {
+	public static double actAndEvalFunction(GameState state, Action action) {
 		GameState copia = state.copy();
 		copia.update(action);
-		int value = evalFuncion(copia);
+		double value = evalFuncion(copia);
 		return value;
 	}
 
 	
-	private static int evalFuncion(GameState state) {
+	private static double evalFuncion(GameState state) {
+		/*
 		Unit[][] units = state.units;
 		HaMap mapa = state.map;
 		int value = 0;
@@ -112,12 +124,14 @@ public class Greedy {
 					
 				}
 			}
+			*/
+		double value = evaluator.eval(state, state.p1Turn);
 		return value;
 	}
 	
 	public static Action searchBestAction(GameState state) {
 		Action action = null;
-		int score = 0;
+		double score = 0;
 		boolean initialized = false;
 		List<Action> actions = new LinkedList<Action>();
 		state.possibleActions(actions);
@@ -128,7 +142,7 @@ public class Greedy {
 					score = actAndEvalFunction(state, i);
 					initialized = true;
 				}else {
-					int temporalScore = actAndEvalFunction(state, i);
+					double temporalScore = actAndEvalFunction(state, i);
 					//System.out.println(temporalScore + " -> "+i);
 					if(temporalScore>score) {
 						score = temporalScore;
@@ -157,7 +171,8 @@ public class Greedy {
 	
 
 	private static class MyThread extends Thread{
-		private int maxLocal, myId, numThreads;
+		double maxLocal;
+		private int myId, numThreads;
 		private Action accionLocal;
 		private boolean vacio;
 		private ZonaIntercambio z;
@@ -179,7 +194,7 @@ public class Greedy {
 		public void run() {
 			for(int i=myId; i<actionList.size(); i+= numThreads) {
 				Action aux = actionList.get(i);
-				int score = actAndEvalFunction(state, aux);
+				double score = actAndEvalFunction(state, aux);
 				if (vacio) {
 					accionLocal = aux;
 					maxLocal = score;
@@ -197,7 +212,7 @@ public class Greedy {
 	}
 	
 	private static class ZonaIntercambio{
-		private int maximo;
+		private double maximo;
 		private Action accion;
 		private boolean vacio;
 		
@@ -207,7 +222,7 @@ public class Greedy {
 			accion = null;
 		}
 
-		public synchronized void actualizaMaximo(int maxLocal, Action accionLocal) {
+		public synchronized void actualizaMaximo(double maxLocal, Action accionLocal) {
 			if (vacio) {
 				accion = accionLocal;
 				maximo = maxLocal;
@@ -225,13 +240,17 @@ public class Greedy {
 		}
 	}
 
-	public static int evalActions(GameState state, Action[] acciones) {
+	public static double evalActions(GameState state, Action[] acciones) {
 		GameState copia = state.copy();
-		
+		int i=0;
 		for (Action act : acciones) {
 			copia.update(act);
+			boolean a = copia.p1Turn;
+			int turno = copia.turn;
+			i++;
 		}
-		int val = evalFuncion(copia);
-		return -val;
+		boolean a = copia.p1Turn;
+		double val = evalFuncion(copia);
+		return val;
 	}
 }

@@ -12,6 +12,7 @@ import action.SingletonAction;
 import action.UndoAction;
 import ai.AI;
 import ai.evolution.AiVisualizor;
+import ai.myTest.MyNtbfea.NtbfeaTest;
 
 public class Game {
 
@@ -111,7 +112,7 @@ public class Game {
 				ui.state = state.copy();
 				ui.repaint();
 				try {
-					Thread.sleep(50);
+					Thread.sleep(500);//50
 				} catch (InterruptedException e) {
 				}
 			}

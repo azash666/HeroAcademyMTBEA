@@ -1,4 +1,4 @@
-package ai.myTest.MyNtbea2;
+package ai.myTest.MyNtbea3;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -173,7 +173,7 @@ public class LModel {
 			if (individual.get(bandidoNum).containsKey(key))
 				acm += individual.get(bandidoNum).get(key)+(explore?constante*Math.sqrt(Math.log(cantidadIndividual.get(bandidoNum))/visitasIndividual.get(bandidoNum).get(key)):0);
 			else
-				acm += explore?(10000000+r.nextDouble()):unexplored;//mediaIndividual.get(bandidoNum); //Big number
+				acm += explore?(10000000+r.nextDouble()):mediaIndividual.get(bandidoNum); //Big number
 			bandidoNum++;
 		}
 		//2D
@@ -182,7 +182,7 @@ public class LModel {
 				int par = i*size+ j;
 				String pair = actions[i].toString()+ actions[j].toString();
 				if (parejas.get(par).containsKey(pair)) acm += parejas.get(par).get(pair)+(explore?constante*Math.sqrt(Math.log(cantidadParejas.get(par))/visitasParejas.get(par).get(pair)):0);
-				else acm += explore?(10000000+r.nextDouble()):unexplored;//mediaParejas.get(par); //Big number
+				else acm += explore?(10000000+r.nextDouble()):mediaParejas.get(par); //Big number
 			}
 		}
 		//FullD
@@ -191,7 +191,7 @@ public class LModel {
 			cadena = cadena + aux2.toString();
 		}
 		if (completo.containsKey(cadena)) acm += completo.get(cadena)+(explore?constante*Math.sqrt(Math.log(cantidadCompleto)/visitasCompleto.get(cadena)):0);
-		else acm += explore?(10000000+r.nextDouble()):unexplored;//mediaCompleto; //Big number
+		else acm += explore?(10000000+r.nextDouble()):mediaCompleto; //Big number
 		return acm/(actions.length + (actions.length*(actions.length-1))/2+1);
 	}
 

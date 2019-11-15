@@ -1,4 +1,4 @@
-package ai.myTest.MyNtbea2;
+package ai.myTest.MyNtbfea;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -165,33 +165,38 @@ public class LModel {
 		double unexplored = -100000000;
 		//1D
 		int bandidoNum=0;
-		for (Object action: actions) {
-			if(action==null) return -1000000000;
-			String key = action.toString();
-			int total=0;
-			;
+		for(bandidoNum=0; bandidoNum<actions.length; bandidoNum++) {
+		//for (Object action: actions) {
+			if(actions[bandidoNum]==null) return -1000000000;
+			String key = actions[bandidoNum].toString();
 			if (individual.get(bandidoNum).containsKey(key))
 				acm += individual.get(bandidoNum).get(key)+(explore?constante*Math.sqrt(Math.log(cantidadIndividual.get(bandidoNum))/visitasIndividual.get(bandidoNum).get(key)):0);
 			else
-				acm += explore?(10000000+r.nextDouble()):unexplored;//mediaIndividual.get(bandidoNum); //Big number
+				acm += explore?(10000000+r.nextDouble()):mediaIndividual.get(bandidoNum); //Big number
 			bandidoNum++;
 		}
 		//2D
+		long aa = System.nanoTime();
 		for (int i=0; i<actions.length-1; i++) {
 			for (int j= i+1; j<actions.length; j++) {
 				int par = i*size+ j;
 				String pair = actions[i].toString()+ actions[j].toString();
-				if (parejas.get(par).containsKey(pair)) acm += parejas.get(par).get(pair)+(explore?constante*Math.sqrt(Math.log(cantidadParejas.get(par))/visitasParejas.get(par).get(pair)):0);
-				else acm += explore?(10000000+r.nextDouble()):unexplored;//mediaParejas.get(par); //Big number
+				Map<String, Double> pareja = parejas.get(par);
+				if (pareja.containsKey(pair)) acm += pareja.get(pair)+(explore?constante*Math.sqrt(Math.log(cantidadParejas.get(par))/visitasParejas.get(par).get(pair)):0);
+				else acm += explore?(10000000+r.nextDouble()):mediaParejas.get(par); //Big number
 			}
 		}
 		//FullD
+		long b = System.nanoTime();
 		String cadena = "";
 		for (Object aux2: actions) {
 			cadena = cadena + aux2.toString();
 		}
+		long c = System.nanoTime();
 		if (completo.containsKey(cadena)) acm += completo.get(cadena)+(explore?constante*Math.sqrt(Math.log(cantidadCompleto)/visitasCompleto.get(cadena)):0);
-		else acm += explore?(10000000+r.nextDouble()):unexplored;//mediaCompleto; //Big number
+		else acm += explore?(10000000+r.nextDouble()):mediaCompleto; //Big number
+		long d = System.nanoTime();
+		//System.out.println("ab "+(b-aa)+" bc "+(c-b)+" cd "+(d-c));
 		return acm/(actions.length + (actions.length*(actions.length-1))/2+1);
 	}
 

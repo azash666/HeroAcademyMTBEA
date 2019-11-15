@@ -86,7 +86,6 @@ public abstract class Genome implements Comparable<Genome> {
 				else
 					actions.add(possible.get(random.nextInt(possible.size())));
 			}
-				
 			state.update(actions.get(i));
 		}
 	}
