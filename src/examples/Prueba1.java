@@ -36,8 +36,8 @@ public class Prueba1 {
 		
 		//humanVsHuman();
 		//humanVsAI(false);
-		AIVsAI(false, ntbfea, oep);
-		/*long ini = System.currentTimeMillis();
+		//AIVsAI(false, ntbfea, oep);
+		long ini = System.currentTimeMillis();
 		for(int i=0; i<cantidad; i++) {
 			long a = System.currentTimeMillis();
 			System.out.println("Partida "+(i+1));
@@ -46,7 +46,7 @@ public class Prueba1 {
 			noGfx(i%2==1, ntbfea, oep);
 			
 			//z.close();
-			System.out.print("ntbfea vs oep -->gana: "+gana+"   pierde: "+pierde+"   empata: "+empata);
+			System.out.print("ntbfea(0,30) vs oep -->gana: "+gana+"   pierde: "+pierde+"   empata: "+empata);
 			long b = System.currentTimeMillis()-a;
 			System.out.println("   Tiempo de la partida: "+b);
 		}
@@ -55,7 +55,7 @@ public class Prueba1 {
 		System.out.println("Perdidas = "+pierde*100/cantidad+"%");
 		System.out.println("Empatadas = "+empata*100/cantidad+"%");
 		System.out.println("Tiempo = "+(fin-ini)+" milisegundos");
-		*/
+		/**/
 	}
 
 	private static void noGfx(boolean revancha, AI p1, AI p2) {

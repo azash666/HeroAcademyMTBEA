@@ -31,25 +31,25 @@ public class LModelTest {
 	private static void testing_elementoNuevo(LModel lmodel, boolean print) {
 		Objeto[] current = new Objeto[5];
 		current[0] = new Objeto("B"); current[1] = new Objeto("A"); current[2] = new Objeto("C"); current[3] = new Objeto("C"); current[4] = new Objeto("G");
-		if(print) System.out.println("BACCG : Exploracion --> "+lmodel.puntua(current));
-		if(print) System.out.println("BACCG : Explotacion --> "+lmodel.puntua(current, false));
+		if(print) System.out.println("BACCG : Exploracion --> "+lmodel.eval(current));
+		if(print) System.out.println("BACCG : Explotacion --> "+lmodel.eval(current, false));
 		System.out.println();
 		current[0] = new Objeto("A"); current[1] = new Objeto("B"); current[2] = new Objeto("C"); current[3] = new Objeto("C"); current[4] = new Objeto("X");
-		if(print) System.out.println("ABCCX : Exploracion --> "+lmodel.puntua(current));
-		if(print) System.out.println("ABCCX : Explotacion --> "+lmodel.puntua(current, false));
+		if(print) System.out.println("ABCCX : Exploracion --> "+lmodel.eval(current));
+		if(print) System.out.println("ABCCX : Explotacion --> "+lmodel.eval(current, false));
 		System.out.println();
 	}
 	
 	private static void testing_combinacionNueva(LModel lmodel, boolean print) {
 		Objeto[] current = new Objeto[5];
 		current[0] = new Objeto("B"); current[1] = new Objeto("A"); current[2] = new Objeto("C"); current[3] = new Objeto("C"); current[4] = new Objeto("E");
-		if(print) System.out.println("BACCE : Exploracion --> "+lmodel.puntua(current));
-		if(print) System.out.println("BACCE : Explotacion --> "+lmodel.puntua(current, false));
+		if(print) System.out.println("BACCE : Exploracion --> "+lmodel.eval(current));
+		if(print) System.out.println("BACCE : Explotacion --> "+lmodel.eval(current, false));
 		System.out.println();
 		
 		current[0] = new Objeto("A"); current[1] = new Objeto("B"); current[2] = new Objeto("C"); current[3] = new Objeto("C"); current[4] = new Objeto("E");
-		if(print) System.out.println("ABCCE : Exploracion --> "+lmodel.puntua(current));
-		if(print) System.out.println("ABCCE : Explotacion --> "+lmodel.puntua(current, false));
+		if(print) System.out.println("ABCCE : Exploracion --> "+lmodel.eval(current));
+		if(print) System.out.println("ABCCE : Explotacion --> "+lmodel.eval(current, false));
 		System.out.println();
 	}
 
@@ -60,7 +60,7 @@ public class LModelTest {
 			Objeto[] aux =  (Objeto[]) obj;
 			objs.add(aux);
 			if(print) Auxiliares.imprime(aux);
-			if (print) System.out.println(lmodel.puntua(aux, false));
+			if (print) System.out.println(lmodel.eval(aux, false));
 		}
 	}
 	
@@ -75,13 +75,13 @@ public class LModelTest {
 		System.out.println("Exploracion");
 		Objeto[] current = new Objeto[5];
 		current[0] = new Objeto("A"); current[1] = new Objeto("B"); current[2] = new Objeto("C"); current[3] = new Objeto("D"); current[4] = new Objeto("E");
-		if(print) System.out.println(lmodel.puntua(current));
+		if(print) System.out.println(lmodel.eval(current));
 		
 		current[0] = new Objeto("C"); current[1] = new Objeto("C"); current[2] = new Objeto("C"); current[3] = new Objeto("D"); current[4] = new Objeto("E");
-		if(print) System.out.println(lmodel.puntua(current));
+		if(print) System.out.println(lmodel.eval(current));
 		
 		//lmodel.addToLModel(current, 0);
-		if(print) System.out.println(lmodel.puntua(current));
+		if(print) System.out.println(lmodel.eval(current));
 		System.out.println();
 		
 		Auxiliares.imprime(lmodel);
@@ -90,10 +90,10 @@ public class LModelTest {
 		System.out.println("Explotacion");
 		Objeto[] current = new Objeto[5];
 		current[0] = new Objeto("A"); current[1] = new Objeto("B"); current[2] = new Objeto("C"); current[3] = new Objeto("D"); current[4] = new Objeto("E");
-		if(print) System.out.println(lmodel.puntua(current, false));
+		if(print) System.out.println(lmodel.eval(current, false));
 		
 		current[0] = new Objeto("C"); current[1] = new Objeto("B"); current[2] = new Objeto("C"); current[3] = new Objeto("D"); current[4] = new Objeto("E");
-		if(print) System.out.println(lmodel.puntua(current, false));
+		if(print) System.out.println(lmodel.eval(current, false));
 		System.out.println();
 	}
 

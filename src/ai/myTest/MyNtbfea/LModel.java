@@ -2,201 +2,200 @@ package ai.myTest.MyNtbfea;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import action.Action;
-import util.Auxiliares;
 
 public class LModel {
-	public Map<Integer, Map<String, Double>> individual;
-	public Map<Integer, Map<String, Integer>> visitasIndividual;
-	public Map<Integer, Double> mediaIndividual;
-	public Map<Integer, Integer> cantidadIndividual;
+	public Map<Integer, Map<String, Double>> score_1D;
+	public Map<Integer, Map<String, Integer>> visits_1D;
+	public Map<Integer, Double> average_1D;
+	public Map<Integer, Integer> quantity_1D;
 	
-	public Map<Integer, Map<String, Double>> parejas;
-	public Map<Integer, Map<String, Integer>> visitasParejas;
-	public Map<Integer, Double> mediaParejas;
-	public Map<Integer, Integer> cantidadParejas;
+	public Map<Integer, Map<String, Double>> score_2D;
+	public Map<Integer, Map<String, Integer>> visits_2D;
+	public Map<Integer, Double> average_2D;
+	public Map<Integer, Integer> quantity_2D;
 	
-	public Map<String, Double> completo;
-	public Map<String, Integer> visitasCompleto;
-	public double mediaCompleto;
-	public int cantidadCompleto;
+	public Map<String, Double> score_5D;
+	public Map<String, Integer> visits_5D;
+	public double average_5D;
+	public int quantity_5D;
 	//public int total;
 	
-	public int size;
+	public int numberOfActions;
 	
 	public double constante;
-	public Map<String, Object[]> diccionario;
+	public Map<String, Object[]> stringToActionsTranslator;
 	
-	public LModel(int size) {
+	public LModel(int numberOfActions) {
 		
-		individual = new HashMap<Integer, Map<String, Double>>();
-		visitasIndividual = new HashMap<Integer, Map<String,Integer>>();
-		mediaIndividual = new HashMap<Integer, Double>();
-		cantidadIndividual = new HashMap<Integer, Integer>();
+		score_1D = new HashMap<Integer, Map<String, Double>>();
+		visits_1D = new HashMap<Integer, Map<String,Integer>>();
+		average_1D = new HashMap<Integer, Double>();
+		quantity_1D = new HashMap<Integer, Integer>();
 		
-		parejas = new HashMap<Integer, Map<String,Double>>();
-		visitasParejas = new HashMap<Integer, Map<String,Integer>>();
-		mediaParejas = new HashMap<Integer, Double>();
-		cantidadParejas = new HashMap<Integer, Integer>();
+		score_2D = new HashMap<Integer, Map<String,Double>>();
+		visits_2D = new HashMap<Integer, Map<String,Integer>>();
+		average_2D = new HashMap<Integer, Double>();
+		quantity_2D = new HashMap<Integer, Integer>();
 		
-		completo = new HashMap<String, Double>();
-		visitasCompleto = new HashMap<String, Integer>();
-		cantidadCompleto = 0;
-		mediaCompleto = 0.0;
+		score_5D = new HashMap<String, Double>();
+		visits_5D = new HashMap<String, Integer>();
+		average_5D = 0.0;
+		quantity_5D = 0;
 		
-		diccionario = new HashMap<String, Object[]>();
-		//total = 0;
+		stringToActionsTranslator = new HashMap<String, Object[]>();
 		constante = 1 / Math.sqrt(2);
 
-		this.size = size;
-		for(int i=0; i<size; i++) {
-			individual.put(i, new HashMap<String, Double>());
-			visitasIndividual.put(i, new HashMap<String,Integer>());
-			mediaIndividual.put(i, 0.0);
-			cantidadIndividual.put(i, 0);
-			for(int j=i+1; j<size; j++) {
-				int par = i*size+ j;
-				parejas.put(par, new HashMap<String, Double>());
-				visitasParejas.put(par, new HashMap<String,Integer>());
-				mediaParejas.put(par, 0.0);
-				cantidadParejas.put(par, 0);
+		this.numberOfActions = numberOfActions;
+		for(int numActionIndex = 0; numActionIndex < numberOfActions; numActionIndex++) {
+			score_1D.put(numActionIndex, new HashMap<String, Double>());
+			visits_1D.put(numActionIndex, new HashMap<String,Integer>());
+			average_1D.put(numActionIndex, 0.0);
+			quantity_1D.put(numActionIndex, 0);
+			for(int numAction2Index = numActionIndex+1; numAction2Index < numberOfActions; numAction2Index++) {
+				int key_2D = numActionIndex*numberOfActions+ numAction2Index;
+				score_2D.put(key_2D, new HashMap<String, Double>());
+				visits_2D.put(key_2D, new HashMap<String,Integer>());
+				average_2D.put(key_2D, 0.0);
+				quantity_2D.put(key_2D, 0);
 			}
 		}
 	}
 	
 	public void addToLModel(Object[] current, double value) {
 		if(current[0] == null) return;
-		//total++;
-		for (int i=0; i<current.length; i++) {
-			//Auxiliares.imprime(current);
-			Object action = current[i];
-			//if (Object== null) break;
-			String hash = action.toString();
-			if (individual.get(i).containsKey(hash)) {
+		Map<String, Double> localScore_1D;
+		Map<String, Integer> localVisits_1D;
+		Map<String, Double> localScore_2D;
+		Map<String, Integer> localVisits_2D;
+		
+		for (int numActionIndex = 0; numActionIndex < current.length; numActionIndex++) {
+			Object action = current[numActionIndex];
+			String keyBandit_1D = action.toString();
+			
+			localScore_1D = score_1D.get(numActionIndex);
+			localVisits_1D = visits_1D.get(numActionIndex);
+																					// 1 Dimension Bandit
+			if (localScore_1D.containsKey(keyBandit_1D)) {
 				
-				individual.get(i).put(hash, (((individual.get(i).get(hash)*visitasIndividual.get(i).get(hash)+value)/(visitasIndividual.get(i).get(hash)+1))));
-				visitasIndividual.get(i).put(hash, visitasIndividual.get(i).get(hash)+1);
+				localScore_1D.put(keyBandit_1D, (((localScore_1D.get(keyBandit_1D)*localVisits_1D.get(keyBandit_1D)+value)/(localVisits_1D.get(keyBandit_1D)+1))));
+				localVisits_1D.put(keyBandit_1D, localVisits_1D.get(keyBandit_1D)+1);
 			}else {
-				individual.get(i).put(hash, value);
-				visitasIndividual.get(i).put(hash, 1);
+				localScore_1D.put(keyBandit_1D, value);
+				localVisits_1D.put(keyBandit_1D, 1);
 			}
-			mediaIndividual.put(i,(mediaIndividual.get(i)*cantidadIndividual.get(i)+value)/(cantidadIndividual.get(i)+1));
-			cantidadIndividual.put(i, cantidadIndividual.get(i)+1);
-			for (int j=i+1; j<current.length; j++) {
-				int par = i*size+ j;
-				//Auxiliares.imprime(mediaParejas.keySet());
-				//System.out.println(par);
-				Object b = current[j];
-				String pair = action.toString()+ b.toString();
-				if(visitasParejas.get(par).containsKey(pair)) {
-					parejas.get(par).put(pair, (parejas.get(par).get(pair)*visitasParejas.get(par).get(pair)+value)/(visitasParejas.get(par).get(pair)+1));
-					visitasParejas.get(par).put(pair, visitasParejas.get(par).get(pair)+1);
+			average_1D.put(numActionIndex,(average_1D.get(numActionIndex)*quantity_1D.get(numActionIndex)+value)/(quantity_1D.get(numActionIndex)+1));
+			quantity_1D.put(numActionIndex, quantity_1D.get(numActionIndex)+1);
+			
+																					// 2 Dimensions Bandit
+			for (int numAction2Index = numActionIndex+1; numAction2Index < current.length; numAction2Index ++) {
+				int keyBandit_2D = numActionIndex*numberOfActions+ numAction2Index ;
+				String keyActions_2D = action.toString()+ current[numAction2Index ].toString();
+				
+				localScore_2D = score_2D.get(keyBandit_2D);
+				localVisits_2D = visits_2D.get(keyBandit_2D);
+				
+				if(localVisits_2D.containsKey(keyActions_2D)) {
+					localScore_2D.put(keyActions_2D, (localScore_2D.get(keyActions_2D)*localVisits_2D.get(keyActions_2D)+value)/(localVisits_2D.get(keyActions_2D)+1));
+					localVisits_2D.put(keyActions_2D, localVisits_2D.get(keyActions_2D)+1);
 					
 				}else {
-					parejas.get(par).put(pair, value);
-					visitasParejas.get(par).put(pair, 1);
+					localScore_2D.put(keyActions_2D, value);
+					localVisits_2D.put(keyActions_2D, 1);
 				}
-				mediaParejas.put(par, (mediaParejas.get(par)*cantidadParejas.get(par)+value)/(cantidadParejas.get(par)+1));
-				cantidadParejas.put(par, cantidadParejas.get(par)+1);
+				average_2D.put(keyBandit_2D, (average_2D.get(keyBandit_2D)*quantity_2D.get(keyBandit_2D)+value)/(quantity_2D.get(keyBandit_2D)+1));
+				quantity_2D.put(keyBandit_2D, quantity_2D.get(keyBandit_2D)+1);
 			}
 		}
-		String cadena = "";
+																					// 5 Dimensions Bandit
+		String keyActions_5D = "";
 		for (Object aux: current) {
-			cadena = cadena + aux.toString();
+			keyActions_5D = keyActions_5D + aux.toString();
 		}
 		
-		diccionario.put(cadena, current);
+		stringToActionsTranslator.put(keyActions_5D, current);
 
-		if (visitasCompleto.containsKey(cadena)) {
-			completo.put(cadena, (completo.get(cadena)*visitasCompleto.get(cadena)+value)/(visitasCompleto.get(cadena)+1));
-			visitasCompleto.put(cadena, visitasCompleto.get(cadena)+1);
+		if (visits_5D.containsKey(keyActions_5D)) {
+			score_5D.put(keyActions_5D, (score_5D.get(keyActions_5D)*visits_5D.get(keyActions_5D)+value)/(visits_5D.get(keyActions_5D)+1));
+			visits_5D.put(keyActions_5D, visits_5D.get(keyActions_5D)+1);
 		}else {
-			completo.put(cadena, value);
-			visitasCompleto.put(cadena, 1);
+			score_5D.put(keyActions_5D, value);
+			visits_5D.put(keyActions_5D, 1);
 		}
-		mediaCompleto = (mediaCompleto*cantidadCompleto+value)/(cantidadCompleto+1);
-		cantidadCompleto=cantidadCompleto+1;
+		average_5D = (average_5D*quantity_5D+value)/(quantity_5D+1);
+		quantity_5D = quantity_5D+1;
 		
 	}
 	
 	public void combineLModel(LModel lModel) {
-		for(int i=0; i<size; i++) {
-			combineSet(lModel.individual.get(i), lModel.visitasIndividual.get(i), individual.get(i), visitasIndividual.get(i));
-			if((cantidadIndividual.get(i)+lModel.cantidadIndividual.get(i))>0)
-				mediaIndividual.put(i, (mediaIndividual.get(i)*cantidadIndividual.get(i)+lModel.mediaIndividual.get(i)*lModel.cantidadIndividual.get(i))/(cantidadIndividual.get(i)+lModel.cantidadIndividual.get(i)));
+		for(int i = 0; i < numberOfActions; i++) {
+			combineSet(lModel.score_1D.get(i), lModel.visits_1D.get(i), score_1D.get(i), visits_1D.get(i));
+			if((quantity_1D.get(i)+lModel.quantity_1D.get(i))>0)
+				average_1D.put(i, (average_1D.get(i)*quantity_1D.get(i)+lModel.average_1D.get(i)*lModel.quantity_1D.get(i))/(quantity_1D.get(i)+lModel.quantity_1D.get(i)));
 			else
-				mediaIndividual.put(i, 0.0);
-			cantidadIndividual.put(i, cantidadIndividual.get(i)+lModel.cantidadIndividual.get(i));
-			for(int j=i+1; j<size; j++) {
-				int par = i*size+ j;
-				combineSet(lModel.parejas.get(par), lModel.visitasParejas.get(par), parejas.get(par), visitasParejas.get(par));
+				average_1D.put(i, 0.0);
+			quantity_1D.put(i, quantity_1D.get(i)+lModel.quantity_1D.get(i));
+			for(int j = i+1; j < numberOfActions; j++) {
+				int par = i*numberOfActions+ j;
+				combineSet(lModel.score_2D.get(par), lModel.visits_2D.get(par), score_2D.get(par), visits_2D.get(par));
 				
-				if((cantidadParejas.get(par)+lModel.cantidadParejas.get(par))>0)
-					mediaParejas.put(par, (mediaParejas.get(par)*cantidadParejas.get(par)+lModel.mediaParejas.get(par)*lModel.cantidadParejas.get(par))/(cantidadParejas.get(par)+lModel.cantidadParejas.get(par)));
+				if((quantity_2D.get(par)+lModel.quantity_2D.get(par))>0)
+					average_2D.put(par, (average_2D.get(par)*quantity_2D.get(par)+lModel.average_2D.get(par)*lModel.quantity_2D.get(par))/(quantity_2D.get(par)+lModel.quantity_2D.get(par)));
 				else
-					mediaParejas.put(par, 0.0);
-				cantidadParejas.put(par, cantidadParejas.get(par)+lModel.cantidadParejas.get(par));
+					average_2D.put(par, 0.0);
+				quantity_2D.put(par, quantity_2D.get(par)+lModel.quantity_2D.get(par));
 			}
 		}
-		combineSet(lModel.completo, lModel.visitasCompleto, completo, visitasCompleto);
+		combineSet(lModel.score_5D, lModel.visits_5D, score_5D, visits_5D);
 
-		if((cantidadCompleto+lModel.cantidadCompleto)>0)
-			mediaCompleto = (mediaCompleto*cantidadCompleto+lModel.mediaCompleto*lModel.cantidadCompleto)/(cantidadCompleto+lModel.cantidadCompleto);
+		if((quantity_5D+lModel.quantity_5D)>0)
+			average_5D = (average_5D*quantity_5D+lModel.average_5D*lModel.quantity_5D)/(quantity_5D+lModel.quantity_5D);
 		else
-			mediaCompleto=0.0;
-		cantidadCompleto = cantidadCompleto+lModel.cantidadCompleto;
-		//total+=lModel.total;
-		diccionario.putAll(lModel.diccionario);
+			average_5D = 0.0;
+		quantity_5D = quantity_5D+lModel.quantity_5D;
+		stringToActionsTranslator.putAll(lModel.stringToActionsTranslator);
 	}
 	
-	public double puntua(Object[] actions) {
-		return puntua(actions, true);
+	public double eval(Object[] actions) {
+		return eval(actions, true);
 	}
 	
-	public double puntua(Object[] actions, boolean explore) {
+	public double eval(Object[] actions, boolean explore) {
 		double acm = 0;
 		Random r = new Random();
-		double unexplored = -100000000;
 		//1D
-		int bandidoNum=0;
-		for(bandidoNum=0; bandidoNum<actions.length; bandidoNum++) {
+		int bandidoNum = 0;
+		for(bandidoNum = 0; bandidoNum<actions.length; bandidoNum++) {
 		//for (Object action: actions) {
 			if(actions[bandidoNum]==null) return -1000000000;
 			String key = actions[bandidoNum].toString();
-			if (individual.get(bandidoNum).containsKey(key))
-				acm += individual.get(bandidoNum).get(key)+(explore?constante*Math.sqrt(Math.log(cantidadIndividual.get(bandidoNum))/visitasIndividual.get(bandidoNum).get(key)):0);
+			if (score_1D.get(bandidoNum).containsKey(key))
+				acm += score_1D.get(bandidoNum).get(key)+(explore?constante*Math.sqrt(Math.log(quantity_1D.get(bandidoNum))/visits_1D.get(bandidoNum).get(key)):0);
 			else
-				acm += explore?(10000000+r.nextDouble()):mediaIndividual.get(bandidoNum); //Big number
+				acm += explore?(10000000+r.nextDouble()):average_1D.get(bandidoNum); //Big number
 			bandidoNum++;
 		}
 		//2D
-		long aa = System.nanoTime();
-		for (int i=0; i<actions.length-1; i++) {
-			for (int j= i+1; j<actions.length; j++) {
-				int par = i*size+ j;
+		for (int i = 0; i<actions.length-1; i++) {
+			for (int j = i+1; j<actions.length; j++) {
+				int par = i*numberOfActions+ j;
 				String pair = actions[i].toString()+ actions[j].toString();
-				Map<String, Double> pareja = parejas.get(par);
-				if (pareja.containsKey(pair)) acm += pareja.get(pair)+(explore?constante*Math.sqrt(Math.log(cantidadParejas.get(par))/visitasParejas.get(par).get(pair)):0);
-				else acm += explore?(10000000+r.nextDouble()):mediaParejas.get(par); //Big number
+				Map<String, Double> pareja = score_2D.get(par);
+				if (pareja.containsKey(pair)) acm += pareja.get(pair)+(explore?constante*Math.sqrt(Math.log(quantity_2D.get(par))/visits_2D.get(par).get(pair)):0);
+				else acm += explore?(10000000+r.nextDouble()):average_2D.get(par); //Big number
 			}
 		}
-		//FullD
-		long b = System.nanoTime();
+		//5D
 		String cadena = "";
 		for (Object aux2: actions) {
 			cadena = cadena + aux2.toString();
 		}
-		long c = System.nanoTime();
-		if (completo.containsKey(cadena)) acm += completo.get(cadena)+(explore?constante*Math.sqrt(Math.log(cantidadCompleto)/visitasCompleto.get(cadena)):0);
-		else acm += explore?(10000000+r.nextDouble()):mediaCompleto; //Big number
-		long d = System.nanoTime();
-		//System.out.println("ab "+(b-aa)+" bc "+(c-b)+" cd "+(d-c));
+		
+		if (score_5D.containsKey(cadena)) acm += score_5D.get(cadena)+(explore?constante*Math.sqrt(Math.log(quantity_5D)/visits_5D.get(cadena)):0);
+		else acm += explore?(10000000+r.nextDouble()):average_5D; //Big number
+
 		return acm/(actions.length + (actions.length*(actions.length-1))/2+1);
 	}
 
@@ -211,42 +210,22 @@ public class LModel {
 			}
 		}
 	}
-/*
-	public Object[] getBestActions() {
-		boolean vacio = true;
-		Object[] current = null;
-		double value = 0;
-		//Map<Object[], Double> todos = new HashMap<Object[], Double>();
-		for(String key: completo.keySet()) {
-			Object[] acciones = diccionario.get(key);
-			if(vacio) {
-				current = acciones;
-				value = completo.get(key);
-				vacio = false;
-			}else {
-				double aux = completo.get(key);
-				if (aux>value) {
-					value = aux;
-					current = acciones;
-				}
-			}
-		}
-		return current;
-	}
-*/
+
+	
 	public Set<Object[]> getBestActionsSet() {
 		Set<Object[]> devolver = new HashSet<Object[]>();
-		for(String key : completo.keySet()) {
+		for(String key : score_5D.keySet()) {
 			//Auxiliares.imprime(diccionario.keySet());
-			devolver.add(diccionario.get(key));
+			devolver.add(stringToActionsTranslator.get(key));
 		}
 
 		return devolver;
 	}
 	
+	
 	public LModel copy() {
 		// Aqui hay un fallo
-		LModel lmodel = new LModel(size);
+		LModel lmodel = new LModel(numberOfActions);
 		lmodel.combineLModel(this);
 		return lmodel;
 	}

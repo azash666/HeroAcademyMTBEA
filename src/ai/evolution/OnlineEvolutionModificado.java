@@ -103,7 +103,7 @@ public class OnlineEvolutionModificado implements AI, AiVisualizor {
 			search(state);
 
 			long c = System.currentTimeMillis();
-			System.out.println("OEP --> tiempo: "+(c-a)+"  iteraciones: "+iteraciones.get());
+			//System.out.println("OEP --> tiempo: "+(c-a)+"  iteraciones: "+iteraciones.get());
 		}
 
 		table.clear();
