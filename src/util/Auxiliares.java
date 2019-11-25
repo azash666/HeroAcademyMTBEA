@@ -158,7 +158,7 @@ public class Auxiliares {
 		System.out.println("----Individuales:----");
 		for (int i: lmodel.score_1D.keySet()) {
 			System.out.println("  Bandido "+i);
-			for (String act: lmodel.score_1D.get(i).keySet()) {
+			for (Integer act: lmodel.score_1D.get(i).keySet()) {
 				System.out.println(lmodel.visits_1D.get(i).get(act) +" x "+act + " --> "+lmodel.score_1D.get(i).get(act));
 			}
 			System.out.print("Cantidad: "+lmodel.quantity_1D.get(i));
@@ -169,7 +169,7 @@ public class Auxiliares {
 		System.out.println("----Parejas:----");
 		for (int i: lmodel.score_2D.keySet()) {
 			System.out.println("  Bandido "+i);
-			for (String act: lmodel.score_2D.get(i).keySet()) {
+			for (Integer act: lmodel.score_2D.get(i).keySet()) {
 				System.out.println(lmodel.visits_2D.get(i).get(act) +" x "+act + " --> "+lmodel.score_2D.get(i).get(act));
 			}
 			System.out.print("Cantidad: "+lmodel.quantity_2D.get(i));
@@ -178,28 +178,12 @@ public class Auxiliares {
 		}
 		System.out.println();
 		System.out.println("----Completo:----");
-		for (String act: lmodel.score_5D.keySet()) {
+		for (Integer act: lmodel.score_5D.keySet()) {
 			System.out.println(lmodel.visits_5D.get(act) +" x "+act + " --> "+lmodel.score_5D.get(act));
 		}
 		System.out.print("Cantidad: "+lmodel.quantity_5D);
 		System.out.println("  Media: "+lmodel.average_5D);
 		System.out.println();
-	}
-	
-	public static <E> boolean comparaVectores(E[] vector1, E[] vector2) {
-		if(vector1.length != vector2.length) return false;
-		for(int i=0; i<vector1.length; i++) {
-			if(vector1[i]==null || vector2[i]==null) return false;
-			if(!vector1[i].equals(vector2[i])) return false;
-		}
-		return true;
-	}
-	
-	public static <E> boolean containsVector(List<E[]> lista, E[] vector) {
-		for(E[] elemento: lista) {
-			if(comparaVectores(elemento, vector)) return true;
-		}
-		return false;
 	}
 }
 

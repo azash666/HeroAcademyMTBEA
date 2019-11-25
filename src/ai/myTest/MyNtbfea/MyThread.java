@@ -7,7 +7,7 @@ import java.util.Set;
 import action.Action;
 import ai.evaluation.IStateEvaluator;
 import game.GameState;
-import util.Auxiliares;
+//import util.Auxiliares;
 
 class MyThread extends Thread {
 	private ExchangeZone z;
@@ -74,16 +74,18 @@ class MyThread extends Thread {
 				}
 			}
 			for(Action[] acciones : population) {
-				double nuevoValor = this.lModel.eval(acciones);
-				if(System.currentTimeMillis() >= evaluatorTime) nuevoValor= this.lModel.eval(acciones);
-				else {
+				double nuevoValor;
+				if(System.currentTimeMillis() >= evaluatorTime) {
+					nuevoValor= this.lModel.eval(acciones);
+				}
+				else { 
 					GameState copia = new GameState(state.map);
 					copia.imitate(state);
 					for(Action action: acciones) copia.update(action);
 					nuevoValor = evaluator.eval(copia, state.p1Turn);
 				}
 				int anyadidos = 0;
-				if((numParents > parents.size() || nuevoValor>puntuaciones[numParents-1-anyadidos] )&& !Auxiliares.containsVector(parents, acciones)) {
+				if((numParents > parents.size() || nuevoValor>puntuaciones[numParents-1-anyadidos] )&& !listContainsArray(parents, acciones)) {
 					if(numParents == parents.size()) {
 						parents.remove(numParents-1-anyadidos);
 						puntuaciones[numParents-1-anyadidos] = nuevoValor;
@@ -111,6 +113,22 @@ class MyThread extends Thread {
 			if(System.currentTimeMillis() >= evolutionTime) break;
 		}
 		z.update(lModel);
+	}
+	
+	private boolean arrayComarison(Action[] array1, Action[] array2) {
+		if(array1.length != array2.length) return false;
+		for(int i=0; i<array1.length; i++) {
+			if(array1[i]==null || array2[i]==null) return false;
+			if(!array1[i].equals(array2[i])) return false;
+		}
+		return true;
+	}
+	
+	private boolean listContainsArray(List<Action[]> listOfArrays, Action[] array) {
+		for(Action[] elementOfTheList: listOfArrays) {
+			if(arrayComarison(elementOfTheList, array)) return true;
+		}
+		return false;
 	}
 	
 	

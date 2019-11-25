@@ -13,7 +13,7 @@ import ai.evaluation.IStateEvaluator;
 import ai.myTest.mutators.NaturalMutator;
 import ai.util.ActionPruner;
 import game.GameState;
-import util.Auxiliares;
+//import util.Auxiliares;
 
 public class Ntbfea {
 	
@@ -25,20 +25,31 @@ public class Ntbfea {
 	public static int numParents = 5;
 	public static int numOffsprings = 50;
 
+	private double evaluatorTimeWeight = .85;
+	private double evolutionTimeWeight = .97;
+	private double almostFullTimeWeight = .999;
 
-	public int NUM_THREADS = 6;
+
+	public int NUM_THREADS = 1;
 
 	private IStateEvaluator evaluator;
 	
 	public Ntbfea(IStateEvaluator evaluator, int budget, int numParents, int numNeighbors) {
-		Ntbfea.evaluatorTime = (long )((double)budget*.30)+System.currentTimeMillis();
-		Ntbfea.evolutionTime = (long)((double)budget*.85)+System.currentTimeMillis();
-		Ntbfea.almostFullTime = (long)((double)budget*.999)+System.currentTimeMillis();
+		Ntbfea.evaluatorTime = (long )((double)budget*evaluatorTimeWeight)+System.currentTimeMillis();
+		Ntbfea.evolutionTime = (long)((double)budget*evolutionTimeWeight)+System.currentTimeMillis();
+		Ntbfea.almostFullTime = (long)((double)budget*almostFullTimeWeight)+System.currentTimeMillis();
 		this.evaluator = evaluator;
 		Ntbfea.numParents = numParents;
 		Ntbfea.numOffsprings = numNeighbors;
 		rand = new Random();
 		Ntbfea.iterations = new AtomicInteger(0);
+	}
+	
+	public Ntbfea setWeights(double evaluatorTimeWeight, double evolutionTimeWeight, double almostFullTimeWeight) {
+		this.evaluatorTimeWeight = evaluatorTimeWeight;
+		this.evolutionTimeWeight = evolutionTimeWeight;
+		this.almostFullTimeWeight = almostFullTimeWeight;
+		return this;
 	}
 
 	
@@ -80,6 +91,7 @@ public class Ntbfea {
 		//long c = System.currentTimeMillis();				//Used to measure time used searching the best action
 
 		//System.out.println("Ntbfea --> tiempo: "+(c-a)+"  iteraciones: "+Ntbfea.iterations.get());	//Used to show iterations and time
+		
 		return actionsTurn;
 	}
 
@@ -106,9 +118,25 @@ public class Ntbfea {
 				else actionsTurn[j] = possibleActions.get(rand.nextInt(possibleActions.size()));
 				copy.update(actionsTurn[j]);
 			}
-			if(!Auxiliares.containsVector(parents, actionsTurn)) parents.add(actionsTurn);
+			if(!listContainsArray(parents, actionsTurn)) parents.add(actionsTurn);
 			else i--;
 		}
+	}
+	
+	private boolean arrayComarison(Action[] array1, Action[] array2) {
+		if(array1.length != array2.length) return false;
+		for(int i=0; i<array1.length; i++) {
+			if(array1[i]==null || array2[i]==null) return false;
+			if(!array1[i].equals(array2[i])) return false;
+		}
+		return true;
+	}
+	
+	private boolean listContainsArray(List<Action[]> listOfArrays, Action[] array) {
+		for(Action[] elementOfTheList: listOfArrays) {
+			if(arrayComarison(elementOfTheList, array)) return true;
+		}
+		return false;
 	}
 
 

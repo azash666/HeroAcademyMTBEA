@@ -1,91 +1,61 @@
 package ai.myTest;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-
 import action.Action;
-import action.DropAction;
-import action.UnitAction;
 import ai.AI;
 import ai.evaluation.IStateEvaluator;
-import ai.myTest.MyGreedy.Greedy;
 import ai.myTest.MyNtbfea.Ntbfea;
 import game.GameState;
-import model.HaMap;
-import util.Auxiliares;
-import util.GuardaNumAcciones;
+//import util.Auxiliares;
 
 public class MyNtbfeaAgent implements AI {
-	private int turno, numAccion;
-	private Action[] acciones;
-	public static GuardaNumAcciones guardadorDeNumAcciones;
+	private int currentTurn, subActionNumber;
+	private Action[] fullActions;
 	
-	private final String file = "";
-	private final boolean restart = true;
-	private final boolean save = false;
-
-	private Set<Integer> tiempos = new HashSet<Integer>();
-	
-	private Ntbfea ntbfea;
-	private IStateEvaluator evaluator;
+	private Ntbfea ntbfeaClass;
+	private IStateEvaluator evaluatorClass;
 	private int nbEvals;
-	private int numNeighbors;
-	private int numParents;
+	private int numOfSons;
+	private int numOfParents;
 	
-	public MyNtbfeaAgent(IStateEvaluator evaluator, int nbEvals, int numParents, int numNeighbors) {
+	public MyNtbfeaAgent(IStateEvaluator evaluator, int nbEvals, int numParents, int numOfSons) {
 		this.nbEvals = nbEvals;
-		this.numNeighbors = numNeighbors;
-		this.evaluator=evaluator;
-		this.numParents = numParents;
-		turno = -1;
+		this.numOfSons = numOfSons;
+		this.evaluatorClass = evaluator;
+		this.numOfParents = numParents;
+		currentTurn = -1;
 	}
 	/*
-	 * 0 - Soldado
-	 * 1 - Arquero
+	 * 0 - Soldier
+	 * 1 - Archer
 	 * 2 - Healer
-	 * 3 - Mago
+	 * 3 - Mage
 	 * 4 - Ninja
-	 * 5 - Fuego
-	 * 6 - Pocion
-	 * 7 - Espada
-	 * 8 - Perga
-	 * 9 - Escudo
-	 * 10- Yelmo
-	 * 11- ???
+	 * 5 - Fire
+	 * 6 - Potion
+	 * 7 - Sword
+	 * 8 - Scroll
+	 * 9 - Shield
+	 * 10- Helmet
+	 * 11- ¿Crystal?
 	 */
 	
 	@Override
 	public Action act(GameState state, long ms) {
-		hazUnaVez(state, ms);
-		//return null;
-	    if(numAccion < acciones.length) return acciones[numAccion++];
+		doOnce(state);
+	    if(subActionNumber < fullActions.length) return fullActions[subActionNumber++];
 	    else return null;
 	}
 
-		//Esta función se ejecuta una vez por tueno, al inicio de cada turno
-	private void hazUnaVez(GameState state, long ms) {
-		long start = System.currentTimeMillis();
-		if(turno == state.turn) return;
-		turno = state.turn;
-		numAccion = 0;
-		acciones = new Action[5];
-		ntbfea = new Ntbfea(evaluator, this.nbEvals, this.numParents, this.numNeighbors);
-		GameState copia = state.copy();
-	    List<Action> actions = new LinkedList<Action>();
-	    copia.possibleActions(actions);
-	    Random rand = new Random();
-    	if(guardadorDeNumAcciones!=null) guardadorDeNumAcciones.add(state.turn, actions.size());
+	// This function is executed once per turn.
+	private void doOnce(GameState state) {
+		if(currentTurn == state.turn) return;
+		currentTurn = state.turn;
+		subActionNumber = 0;
+		fullActions = new Action[5];
+		ntbfeaClass = new Ntbfea(evaluatorClass, this.nbEvals, this.numOfParents, this.numOfSons);
+		GameState stateCopy = state.copy();
     	
-    	acciones = ntbfea.searchBestCombination(copia);
-    	long elapsedTime = System.currentTimeMillis() - start;
+    	fullActions = ntbfeaClass.searchBestCombination(stateCopy);
     	
 		
 	}

@@ -33,10 +33,11 @@ public class Prueba1 {
 		AI greedy = new MyGreedyAgent(evaluator);
 		AI ntbfea = new MyNtbfeaAgent(evaluator, 1000, 5, 50);
 		AI random = new MyRandomAgent();
+		AI human = null;
 		
 		//humanVsHuman();
 		//humanVsAI(false);
-		//AIVsAI(false, ntbfea, oep);
+		//AIVsAI(false, ntbfea, human);
 		long ini = System.currentTimeMillis();
 		for(int i=0; i<cantidad; i++) {
 			long a = System.currentTimeMillis();
@@ -46,7 +47,7 @@ public class Prueba1 {
 			noGfx(i%2==1, ntbfea, oep);
 			
 			//z.close();
-			System.out.print("ntbfea(0,30) vs oep -->gana: "+gana+"   pierde: "+pierde+"   empata: "+empata);
+			System.out.print("ntbfea(0,85) vs oep -->gana: "+gana+"   pierde: "+pierde+"   empata: "+empata);
 			long b = System.currentTimeMillis()-a;
 			System.out.println("   Tiempo de la partida: "+b);
 		}
@@ -81,12 +82,6 @@ public class Prueba1 {
 		int budget = 4000; // 4 sec for AI's
 		
 		AI p2 = null;
-		//AI p2 = new RandomAI(RAND_METHOD.BRUTE);
-		//AI p2 = new GreedyActionAI(new HeuristicEvaluator(false));
-		//AI p2 = new GreedyTurnAI(new HeuristicEvaluator(false), budget);
-
-		//AI p1 = new MyNtbeaAgent(evaluator, 1200, 40);
-		//AI p2 = new OnlineIslandEvolution(true, 100, 0.1, 0.5, budget, new HeuristicEvaluator(false));
 		
 		GameArguments gameArgs = new GameArguments(true, p1, p2, "a", DECK_SIZE.STANDARD);
 		gameArgs.budget = budget; 
@@ -99,11 +94,6 @@ public class Prueba1 {
 	private static void AIVsAI(boolean guardar, AI p1, AI p2) {
 		
 		int budget = 4000; // 4 sec for AI's
-		//AI p2 = new OnlineEvolutionModificado(false, 50, .1, .1, 2500, evaluator);
-		//AI p2 = new RandomAI(RAND_METHOD.BRUTE);
-		//AI p2 = new GreedyActionAI(new HeuristicEvaluator(false));
-		//AI p2 = new GreedyTurnAI(new HeuristicEvaluator(false), budget);
-		//AI p2 = new OnlineIslandEvolution(true, 100, 0.1, 0.5, budget, new HeuristicEvaluator(false));
 		
 		GameArguments gameArgs = new GameArguments(true, p1, p2, "a", DECK_SIZE.STANDARD);
 		gameArgs.budget = budget; 

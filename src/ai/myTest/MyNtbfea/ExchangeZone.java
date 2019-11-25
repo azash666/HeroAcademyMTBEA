@@ -8,7 +8,7 @@ import java.util.Set;
 import action.Action;
 import action.EndTurnAction;
 import game.GameState;
-import util.Auxiliares;
+//import util.Auxiliares;
 
 class ExchangeZone{
 	private LModel lModel;
@@ -31,7 +31,7 @@ class ExchangeZone{
 		this.state.imitate(state);
 	}
 
-	public synchronized ExchangeZone putParents(List<Action[]> parents2) {
+	public /*synchronized*/ ExchangeZone putParents(List<Action[]> parents2) {
 		double peorPadre = this.lModel.eval(parents.get(Ntbfea.numParents-1));
 		for(Action[] a : parents2) {
 			double nuevoValor = this.lModel.eval(a);
@@ -45,7 +45,7 @@ class ExchangeZone{
 					double valor = this.lModel.eval(accion);
 					if(valor>nuevoValor) ind++;
 					else break;
-				}if(!Auxiliares.containsVector(parents, a)) {
+				}if(!listContainsArray(parents, a)) {
 					parents.add(ind, a);
 					peorPadre = this.lModel.eval(parents.get(Ntbfea.numParents-1));
 				}
@@ -54,23 +54,39 @@ class ExchangeZone{
 		}
 		return this;
 	}
+	
+	private boolean arrayComarison(Action[] array1, Action[] array2) {
+		if(array1.length != array2.length) return false;
+		for(int i=0; i<array1.length; i++) {
+			if(array1[i]==null || array2[i]==null) return false;
+			if(!array1[i].equals(array2[i])) return false;
+		}
+		return true;
+	}
+	
+	private boolean listContainsArray(List<Action[]> listOfArrays, Action[] array) {
+		for(Action[] elementOfTheList: listOfArrays) {
+			if(arrayComarison(elementOfTheList, array)) return true;
+		}
+		return false;
+	}
 
-	public synchronized List<Action[]> getParents() {
+	public /*synchronized*/ List<Action[]> getParents() {
 		List<Action[]> devolver = new LinkedList<Action[]>();
 		devolver.addAll(parents);
 		return devolver;
 	}
 
 
-	public synchronized LModel getLModel() {
+	public /*synchronized*/ LModel getLModel() {
 		return lModel.copy();
 	}
 
-	public synchronized void update(LModel lModel) {
+	public /*synchronized*/ void update(LModel lModel) {
 		this.lModel.combineLModel(lModel);
 	}
 
-	public synchronized Action[] getBest() {
+	public /*synchronized*/ Action[] getBest() {
 		
 		Set<Object[]> allParents = lModel.getBestActionsSet();
 		
@@ -95,7 +111,7 @@ class ExchangeZone{
 		return bestActions;
 	}
 
-	public synchronized GameState getState() {
+	public /*synchronized*/ GameState getState() {
 		return state;
 	}
 	
