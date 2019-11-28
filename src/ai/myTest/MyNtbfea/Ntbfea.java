@@ -24,8 +24,9 @@ public class Ntbfea {
 	public static AtomicInteger iterations;
 	public static int numParents = 5;
 	public static int numOffsprings = 50;
+	private int budget;
 
-	private double evaluatorTimeWeight = .85;
+	private double evaluatorTimeWeight = 1;
 	private double evolutionTimeWeight = .97;
 	private double almostFullTimeWeight = .999;
 
@@ -35,6 +36,7 @@ public class Ntbfea {
 	private IStateEvaluator evaluator;
 	
 	public Ntbfea(IStateEvaluator evaluator, int budget, int numParents, int numNeighbors) {
+		this.budget = budget;
 		Ntbfea.evaluatorTime = (long )((double)budget*evaluatorTimeWeight)+System.currentTimeMillis();
 		Ntbfea.evolutionTime = (long)((double)budget*evolutionTimeWeight)+System.currentTimeMillis();
 		Ntbfea.almostFullTime = (long)((double)budget*almostFullTimeWeight)+System.currentTimeMillis();
@@ -46,9 +48,13 @@ public class Ntbfea {
 	}
 	
 	public Ntbfea setWeights(double evaluatorTimeWeight, double evolutionTimeWeight, double almostFullTimeWeight) {
+
 		this.evaluatorTimeWeight = evaluatorTimeWeight;
 		this.evolutionTimeWeight = evolutionTimeWeight;
 		this.almostFullTimeWeight = almostFullTimeWeight;
+		Ntbfea.evaluatorTime = (long )((double)budget*evaluatorTimeWeight)+System.currentTimeMillis();
+		Ntbfea.evolutionTime = (long)((double)budget*evolutionTimeWeight)+System.currentTimeMillis();
+		Ntbfea.almostFullTime = (long)((double)budget*almostFullTimeWeight)+System.currentTimeMillis();
 		return this;
 	}
 

@@ -67,7 +67,7 @@ public class MyRandomAgent implements AI {
 	    	boolean elegido = false;
 	    	UnitAction aux = null;
 		    List<Action> lista = new LinkedList<Action>();
-		    for(int j=0; j<actions.size(); j++) {
+		    /*for(int j=0; j<actions.size(); j++) {
 		    	if(actions.get(j) instanceof UnitAction) {
 		    		aux = (UnitAction) actions.get(j);
 		    		if(copia.units[aux.to.x][aux.to.y] != null) {
@@ -77,7 +77,7 @@ public class MyRandomAgent implements AI {
 		    			}
 		    		}
 		    	}
-		    }
+		    }*/
 		    if(elegido) {
 		    	acciones[i] = lista.get(rand.nextInt(lista.size()));
 		    }else {

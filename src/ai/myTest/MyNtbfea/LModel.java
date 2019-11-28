@@ -221,6 +221,7 @@ public class LModel {
 				int keyBandit_2D = numActionIndex*numberOfActions+ numAction2Index;
 
 				LinkedList<Integer> keyList = new LinkedList<Integer>();
+				if(actionsToEval[numActionIndex]==null || actionsToEval[numAction2Index]==null) break;
 				keyList.add(actionsToEval[numActionIndex].hashCode());
 				keyList.add(actionsToEval[numAction2Index].hashCode());
 				Integer keyActions_2D = keyList.hashCode();

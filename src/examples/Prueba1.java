@@ -28,34 +28,46 @@ public class Prueba1 {
 		
 		evaluator = new HeuristicEvaluator(false);
 		evaluator2 = new RolloutEvaluator(1, 1, new RandomAI(RAND_METHOD.TREE), new HeuristicEvaluator(false));
-
+		
+		AI ntbfea = new MyNtbfeaAgent(evaluator, 1000, 5, 50);
 		AI oep = new OnlineEvolutionModificado(false, 45, .2, .1, 1000, evaluator);
 		AI greedy = new MyGreedyAgent(evaluator);
-		AI ntbfea = new MyNtbfeaAgent(evaluator, 1000, 5, 50);
 		AI random = new MyRandomAgent();
 		AI human = null;
 		
 		//humanVsHuman();
 		//humanVsAI(false);
-		//AIVsAI(false, ntbfea, human);
-		long ini = System.currentTimeMillis();
-		for(int i=0; i<cantidad; i++) {
-			long a = System.currentTimeMillis();
-			System.out.println("Partida "+(i+1));
-			//z = new ZonaIntercambio(file);
-			
-			noGfx(i%2==1, ntbfea, oep);
-			
-			//z.close();
-			System.out.print("ntbfea(0,85) vs oep -->gana: "+gana+"   pierde: "+pierde+"   empata: "+empata);
-			long b = System.currentTimeMillis()-a;
-			System.out.println("   Tiempo de la partida: "+b);
+		//AIVsAI(false, greedy, ntbfea);
+		
+		double tiempos[] = new double[] {.9,.95,1,.9,.95,1};
+		int[] resultados = new int[tiempos.length];
+		for(int j=0; j<tiempos.length; j++) {
+			long ini = System.currentTimeMillis();
+			ntbfea = new MyNtbfeaAgent(evaluator, 1000, 5, 50).addEvaluatorTime(tiempos[j]);
+			gana =0; pierde=0; empata=0;
+			for(int i=0; i<cantidad; i++) {
+				long a = System.currentTimeMillis();
+				System.out.print("Partida "+(i+1)+"  -->  ");
+				//z = new ZonaIntercambio(file);
+				
+				noGfx(i%2==1, ntbfea, oep);
+				
+				//z.close();
+				System.out.print("ntbfea("+tiempos[j]+") vs oep -->gana: "+gana+"   pierde: "+pierde+"   empata: "+empata);
+				long b = System.currentTimeMillis()-a;
+				System.out.println("   Tiempo de la partida: "+b);
+			}
+			long fin = System.currentTimeMillis();
+			resultados[j] = gana*100/cantidad;
+			System.out.println("Ganadas = "+gana*100/cantidad+"%");
+			System.out.println("Perdidas = "+pierde*100/cantidad+"%");
+			System.out.println("Empatadas = "+empata*100/cantidad+"%");
+			System.out.println("Tiempo = "+(fin-ini)+" milisegundos");
 		}
-		long fin = System.currentTimeMillis();
-		System.out.println("Ganadas = "+gana*100/cantidad+"%");
-		System.out.println("Perdidas = "+pierde*100/cantidad+"%");
-		System.out.println("Empatadas = "+empata*100/cantidad+"%");
-		System.out.println("Tiempo = "+(fin-ini)+" milisegundos");
+		for(int a: resultados) {
+			System.out.print(a+"\t");
+		}
+		System.out.println();
 		/**/
 	}
 

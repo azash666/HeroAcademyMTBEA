@@ -112,7 +112,7 @@ public class Game {
 				ui.state = state.copy();
 				ui.repaint();
 				try {
-					Thread.sleep(500);//50
+					Thread.sleep(50);//50
 				} catch (InterruptedException e) {
 				}
 			}

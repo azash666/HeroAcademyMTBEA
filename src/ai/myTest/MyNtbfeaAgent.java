@@ -16,6 +16,7 @@ public class MyNtbfeaAgent implements AI {
 	private int nbEvals;
 	private int numOfSons;
 	private int numOfParents;
+	private double time;
 	
 	public MyNtbfeaAgent(IStateEvaluator evaluator, int nbEvals, int numParents, int numOfSons) {
 		this.nbEvals = nbEvals;
@@ -23,6 +24,11 @@ public class MyNtbfeaAgent implements AI {
 		this.evaluatorClass = evaluator;
 		this.numOfParents = numParents;
 		currentTurn = -1;
+	}
+	
+	public MyNtbfeaAgent addEvaluatorTime(double time) {
+		this.time = time;
+		return this;
 	}
 	/*
 	 * 0 - Soldier
@@ -52,7 +58,7 @@ public class MyNtbfeaAgent implements AI {
 		currentTurn = state.turn;
 		subActionNumber = 0;
 		fullActions = new Action[5];
-		ntbfeaClass = new Ntbfea(evaluatorClass, this.nbEvals, this.numOfParents, this.numOfSons);
+		ntbfeaClass = new Ntbfea(evaluatorClass, this.nbEvals, this.numOfParents, this.numOfSons).setWeights(time, .97, .999);
 		GameState stateCopy = state.copy();
     	
     	fullActions = ntbfeaClass.searchBestCombination(stateCopy);
