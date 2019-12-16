@@ -7,6 +7,7 @@ import java.util.Set;
 
 import action.Action;
 import action.EndTurnAction;
+import ai.evaluation.IStateEvaluator;
 import game.GameState;
 //import util.Auxiliares;
 
@@ -14,8 +15,10 @@ class ExchangeZone{
 	private LModel lModel;
 	private GameState state;
 	private List<Action[]> parents;
+
+	//private IStateEvaluator evaluator;
 	
-	public ExchangeZone(GameState state) {
+	public ExchangeZone(GameState state, IStateEvaluator evaluator) {
 		parents = new LinkedList<Action[]>();
 		int numberOfActions = state.turn==1?3:5;
 		Action[] empty;
@@ -29,12 +32,14 @@ class ExchangeZone{
 		this.lModel = new LModel(5);
 		this.state = new GameState(state.map);
 		this.state.imitate(state);
+	//	this.evaluator = evaluator;
 	}
 
 	public /*synchronized*/ ExchangeZone putParents(List<Action[]> parents2) {
 		double peorPadre = this.lModel.eval(parents.get(Ntbfea.numParents-1));
 		for(Action[] a : parents2) {
 			double nuevoValor = this.lModel.eval(a);
+			
 			
 			if(nuevoValor>peorPadre) {
 				parents.remove(Ntbfea.numParents-1);
@@ -106,8 +111,9 @@ class ExchangeZone{
 					bestScore = currentScore;
 				}
 			}
-			if(Ntbfea.almostFullTime < System.currentTimeMillis()) break;
 		}
+		GameState copia = state.copy();
+		for(Action i: bestActions) copia.update(i);
 		return bestActions;
 	}
 

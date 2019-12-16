@@ -25,9 +25,10 @@ public class Ntbfea {
 	public static int numParents = 5;
 	public static int numOffsprings = 50;
 	private int budget;
+	private boolean useMap = true;
 
 	private double evaluatorTimeWeight = 1;
-	private double evolutionTimeWeight = .97;
+	private double evolutionTimeWeight = .99;
 	private double almostFullTimeWeight = .999;
 
 
@@ -52,9 +53,14 @@ public class Ntbfea {
 		this.evaluatorTimeWeight = evaluatorTimeWeight;
 		this.evolutionTimeWeight = evolutionTimeWeight;
 		this.almostFullTimeWeight = almostFullTimeWeight;
-		Ntbfea.evaluatorTime = (long )((double)budget*evaluatorTimeWeight)+System.currentTimeMillis();
+		Ntbfea.evaluatorTime = (long)((double)budget*evaluatorTimeWeight)+System.currentTimeMillis();
 		Ntbfea.evolutionTime = (long)((double)budget*evolutionTimeWeight)+System.currentTimeMillis();
 		Ntbfea.almostFullTime = (long)((double)budget*almostFullTimeWeight)+System.currentTimeMillis();
+		return this;
+	}
+	
+	public Ntbfea putUseOfActionMap(boolean useMap) {
+		this.useMap = useMap;
 		return this;
 	}
 
@@ -73,11 +79,11 @@ public class Ntbfea {
 		//Other parents = Random
 	    buildRandomParents(state, 1, 50, parents);
 		
-		ExchangeZone z = new ExchangeZone(state).putParents(parents);
+		ExchangeZone z = new ExchangeZone(state, evaluator).putParents(parents);
 		if(NUM_THREADS >1) {	
 			Thread[] hilos = new MyThread[NUM_THREADS];
 			for(int i=0; i<NUM_THREADS; i++) {
-				hilos[i] = new MyThread(i, z, state, evaluator);
+				hilos[i] = new MyThread(i, z, state, evaluator, useMap);
 				hilos[i].start();
 			}
 			for(int i=0; i<NUM_THREADS; i++) {
@@ -89,12 +95,12 @@ public class Ntbfea {
 			}
 		}
 		else {
-			Thread h = new MyThread(0, z, state, evaluator);
+			Thread h = new MyThread(0, z, state, evaluator, useMap);
 			h.run();
 		}
 
 		Action[] actionsTurn = z.getBest();
-		//long c = System.currentTimeMillis();				//Used to measure time used searching the best action
+		//long c = System.currentTimeMillis();															//Used to measure time used searching the best action
 
 		//System.out.println("Ntbfea --> tiempo: "+(c-a)+"  iteraciones: "+Ntbfea.iterations.get());	//Used to show iterations and time
 		
@@ -185,13 +191,14 @@ public class Ntbfea {
 	/**	           of the parents (Offsprings)            **/
 	/*******************************************************/
 
-	public static Set<Action[]> neighbors(GameState state, List<Action[]> parents, int numberOfSons, HashMap<Long, List<Action>> legalActions, double mutationProbability) {
+	public static Set<Action[]> neighbors(GameState state, List<Action[]> parents, int numberOfSons, HashMap<Long, List<Action>> legalActionsMap, double mutationProbability, boolean useMap) {
 		
 		NaturalMutator mutator = new NaturalMutator()
 				.putParents(parents)
 				.putMutationProbability(mutationProbability)
-				.putValidator(state, legalActions)
-				.putNumOffspring(numberOfSons);
+				.putValidator(state, legalActionsMap)
+				.putNumOffspring(numberOfSons)
+				.putMapUse(useMap);
 		return mutator.getSons();
 	}
 }

@@ -240,7 +240,7 @@ public class LModel {
 		if (score_5D.containsKey(keyActions_5D)) currentScore += score_5D.get(keyActions_5D)+(explore?constant*Math.sqrt(Math.log(quantity_5D)/visits_5D.get(keyActions_5D)):0);
 		else currentScore += explore?(10000000+r.nextDouble()):average_5D; //Big number
 
-		return currentScore/(actionsToEval.length + (actionsToEval.length*(actionsToEval.length-1))/2+1);
+		return 2*currentScore/(actionsToEval.length + (actionsToEval.length*(actionsToEval.length-1))/2+1);
 	}
 
 

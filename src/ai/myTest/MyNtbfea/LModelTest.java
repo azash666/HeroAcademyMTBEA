@@ -19,13 +19,13 @@ public class LModelTest {
 		LModel lmodel = new LModel(5);
 		LModel lmodel2 = new LModel(5);
 		testing_addToModel(lmodel, false);
-		testing_combineLModel(lmodel, lmodel2, true);
-		testing_puntua_exploracion(lmodel, false);
-		testing_puntua_explotacion(lmodel, false);
+		testing_combineLModel(lmodel, lmodel2, false);
+		testing_puntua_exploracion(lmodel, true);
+		testing_puntua_explotacion(lmodel, true);
 		//testing_getBestActions(lmodel, true);
 		testing_getBestActionsSet(lmodel, false);
-		testing_combinacionNueva(lmodel, true);
-		testing_elementoNuevo(lmodel, true);
+		testing_combinacionNueva(lmodel, false);
+		testing_elementoNuevo(lmodel, false);
 	}
 	
 	private static void testing_elementoNuevo(LModel lmodel, boolean print) {

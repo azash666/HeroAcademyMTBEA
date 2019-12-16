@@ -15,7 +15,7 @@ class MyThread extends Thread {
 	private Action[] current;
 	private boolean salir;
 	//private ConcurrentHashMap<Long, List<Action>> movimientosLegales;
-	private HashMap<Long, List<Action>> movimientosLegales;
+	private HashMap<Long, List<Action>> legalMoves;
 	private LModel lModel;
 	private int numParents = 5;
 	private int numOffsprings = 50;
@@ -23,18 +23,20 @@ class MyThread extends Thread {
 	private long evolutionTime;
 	private long evaluatorTime;
 	private IStateEvaluator evaluator;
+	private boolean useMap;
 
-	public MyThread(int miId, ExchangeZone z, GameState state, IStateEvaluator evaluator) {
+	public MyThread(int miId, ExchangeZone z, GameState state, IStateEvaluator evaluator, boolean useMap) {
 		this.z = z;
 		this.state = z.getState();
 		this.lModel = z.getLModel();
 		this.numOffsprings = Ntbfea.numOffsprings;
 		this.numParents = Ntbfea.numParents;
 		salir = false;
-		this.movimientosLegales = new HashMap<Long, List<Action>>();
+		this.legalMoves = new HashMap<Long, List<Action>>();
 		evolutionTime = Ntbfea.evolutionTime;
 		evaluatorTime = Ntbfea.evaluatorTime;
 		this.evaluator = evaluator;
+		this.useMap = useMap;
 	}
 	
 	public void run() {
@@ -43,11 +45,13 @@ class MyThread extends Thread {
 		
 		parents = z.getParents();
 
-		
 		while(!salir) {
-			//Ntbfea.iterations.addAndGet(1);				//Used to measure number of generations per turn
+
+			Ntbfea.iterations.addAndGet(1);				//Used to measure number of generations per turn
 			if(System.currentTimeMillis() >= evolutionTime) break;
 			int cantidad = state.turn==1?3:5;
+
+			
 			for(int indi =0; indi<parents.size(); indi++) {
 				clone.imitate(state);
 				current = parents.get(indi);
@@ -57,15 +61,15 @@ class MyThread extends Thread {
 				//**add <current,value> to LModel
 				this.lModel.addToLModel(current, value);
 			}
-			Set<Action[]> population = Ntbfea.neighbors(state, parents, numOffsprings, movimientosLegales, probMutar);
+			
+			Set<Action[]> population = Ntbfea.neighbors(state, parents, numOffsprings, legalMoves, probMutar, useMap);
 
 			if(System.currentTimeMillis() >= evolutionTime) break;
-			//current <-- argmax(Population)
-			//Action[] aux = current;
-			//double peorPadre = this.lModel.puntua(parents.get(numPadres-1));
 			Double puntuaciones[] = new Double[numParents];
 			for(int i=0; i<parents.size(); i++) {
-				if(System.currentTimeMillis() >= evaluatorTime) puntuaciones[i] = this.lModel.eval(parents.get(i));
+				if(System.currentTimeMillis() >= evaluatorTime) {
+					puntuaciones[i] = this.lModel.eval(parents.get(i));
+				}
 				else {
 					GameState copia = new GameState(state.map);
 					copia.imitate(state);
@@ -73,31 +77,35 @@ class MyThread extends Thread {
 					puntuaciones[i] = evaluator.eval(copia, state.p1Turn);
 				}
 			}
-			for(Action[] acciones : population) {
-				double nuevoValor;
+
+			
+			for(Action[] turnActions : population) {
+				double newValue;
 				if(System.currentTimeMillis() >= evaluatorTime) {
-					nuevoValor= this.lModel.eval(acciones);
+					newValue= this.lModel.eval(turnActions);
 				}
 				else { 
-					GameState copia = new GameState(state.map);
-					copia.imitate(state);
-					for(Action action: acciones) copia.update(action);
-					nuevoValor = evaluator.eval(copia, state.p1Turn);
+					GameState GS_Copy = new GameState(state.map);
+					GS_Copy.imitate(state);
+					for(Action action: turnActions) GS_Copy.update(action);
+					newValue = evaluator.eval(GS_Copy, state.p1Turn);
 				}
 				int anyadidos = 0;
-				if((numParents > parents.size() || nuevoValor>puntuaciones[numParents-1-anyadidos] )&& !listContainsArray(parents, acciones)) {
+				if((numParents > parents.size() || newValue>puntuaciones[numParents-1-anyadidos] )&& !listContainsArray(parents, turnActions)) {
 					if(numParents == parents.size()) {
 						parents.remove(numParents-1-anyadidos);
-						puntuaciones[numParents-1-anyadidos] = nuevoValor;
-						parents.add(numParents-1-anyadidos, acciones);
+						puntuaciones[numParents-1-anyadidos] = newValue;
+						parents.add(numParents-1-anyadidos, turnActions);
 						anyadidos++;
 					}else {
-						puntuaciones[parents.size()] = nuevoValor;
-						parents.add(acciones);
+						puntuaciones[parents.size()] = newValue;
+						parents.add(turnActions);
 					}
 				}
 			}
-			
+
+
+
 			//Ordenar padres
 			for(int i=1; i<numParents; i++) {
 				if(puntuaciones[i] > puntuaciones[i-1]) {
@@ -111,7 +119,10 @@ class MyThread extends Thread {
 			}
 			
 			if(System.currentTimeMillis() >= evolutionTime) break;
+
 		}
+		
+		
 		z.update(lModel);
 	}
 	

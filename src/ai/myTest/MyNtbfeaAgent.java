@@ -13,23 +13,55 @@ public class MyNtbfeaAgent implements AI {
 	
 	private Ntbfea ntbfeaClass;
 	private IStateEvaluator evaluatorClass;
-	private int nbEvals;
+	private int budget;
 	private int numOfSons;
 	private int numOfParents;
-	private double time;
+	private double evaluatorTime;
+	private double evolutionTime;
+	private double almostFullTime;
+	private boolean actionMapUse = true;
+	private String name;
 	
-	public MyNtbfeaAgent(IStateEvaluator evaluator, int nbEvals, int numParents, int numOfSons) {
-		this.nbEvals = nbEvals;
+	
+	public MyNtbfeaAgent(IStateEvaluator evaluator, int budget, int numParents, int numOfSons) {
+		this.budget = budget;
 		this.numOfSons = numOfSons;
 		this.evaluatorClass = evaluator;
 		this.numOfParents = numParents;
 		currentTurn = -1;
+		evaluatorTime = .2;
+		evolutionTime = .95;
+		almostFullTime = 1;
 	}
 	
-	public MyNtbfeaAgent addEvaluatorTime(double time) {
-		this.time = time;
+	public MyNtbfeaAgent putEvaluatorTime(double time) {
+		this.evaluatorTime = time;
 		return this;
 	}
+
+	public MyNtbfeaAgent putEvolutionTime(double time) {
+		this.evolutionTime = time;
+		return this;
+	}
+
+	public MyNtbfeaAgent putAlmostFullTime(double time) {
+		this.almostFullTime = time;
+		return this;
+	}
+	
+	
+	// Disable the use of map to store actions. It is quicker, but uses a huge bunch of memory for large budgets.
+	
+	public MyNtbfeaAgent disableActionMap() {
+		this.actionMapUse = false;
+		return this;
+	}
+
+	public MyNtbfeaAgent putName(String name) {
+		this.name = name;
+		return this;
+	}
+	
 	/*
 	 * 0 - Soldier
 	 * 1 - Archer
@@ -58,7 +90,8 @@ public class MyNtbfeaAgent implements AI {
 		currentTurn = state.turn;
 		subActionNumber = 0;
 		fullActions = new Action[5];
-		ntbfeaClass = new Ntbfea(evaluatorClass, this.nbEvals, this.numOfParents, this.numOfSons).setWeights(time, .97, .999);
+		ntbfeaClass = new Ntbfea(evaluatorClass, this.budget, this.numOfParents, this.numOfSons).setWeights(evaluatorTime, evolutionTime, almostFullTime)
+				.putUseOfActionMap(actionMapUse);
 		GameState stateCopy = state.copy();
     	
     	fullActions = ntbfeaClass.searchBestCombination(stateCopy);
@@ -85,7 +118,8 @@ public class MyNtbfeaAgent implements AI {
 	@Override
 	public String title() {
 		// TODO Auto-generated method stub
-		return "My NTBFEA Agent";
+		return name;
 	}
+
 	
 }

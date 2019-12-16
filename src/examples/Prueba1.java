@@ -20,7 +20,7 @@ import game.GameArguments;
 
 public class Prueba1 {
 	private static GuardaNumAcciones z;
-	static int gana =0, pierde=0, empata=0, cantidad=100;
+	static int gana =0, pierde=0, empata=0, cantidad=10;
 	final String file = "save2.txt";
 	static IStateEvaluator evaluator, evaluator2;
 	
@@ -29,7 +29,8 @@ public class Prueba1 {
 		evaluator = new HeuristicEvaluator(false);
 		evaluator2 = new RolloutEvaluator(1, 1, new RandomAI(RAND_METHOD.TREE), new HeuristicEvaluator(false));
 		
-		AI ntbfea = new MyNtbfeaAgent(evaluator, 1000, 5, 50);
+		AI ntbfea = new MyNtbfeaAgent(evaluator, 1000, 5, 50).putEvaluatorTime(.99).putName("Ntbfea");
+		AI ntbfea2 = new MyNtbfeaAgent(evaluator, 1000, 5, 50).putEvaluatorTime(1).disableActionMap().putName("Ntbfea 1");
 		AI oep = new OnlineEvolutionModificado(false, 45, .2, .1, 1000, evaluator);
 		AI greedy = new MyGreedyAgent(evaluator);
 		AI random = new MyRandomAgent();
@@ -38,19 +39,26 @@ public class Prueba1 {
 		//humanVsHuman();
 		//humanVsAI(false);
 		//AIVsAI(false, greedy, ntbfea);
-		
-		double tiempos[] = new double[] {.9,.95,1,.9,.95,1};
+		double max = .3;
+		double min = .3;
+		double step = 0.05;
+		double tiempos[] = new double[(int) ((max-min)/step+1)];
+		int k=0;
+		for(double etapa = min; etapa < max+step/2; etapa+=step) {
+			tiempos[k]= etapa;
+			k++;
+		}
 		int[] resultados = new int[tiempos.length];
 		for(int j=0; j<tiempos.length; j++) {
 			long ini = System.currentTimeMillis();
-			ntbfea = new MyNtbfeaAgent(evaluator, 1000, 5, 50).addEvaluatorTime(tiempos[j]);
+			ntbfea = new MyNtbfeaAgent(evaluator, 1000, 5, 50).putEvaluatorTime(tiempos[j]).disableActionMap();
 			gana =0; pierde=0; empata=0;
 			for(int i=0; i<cantidad; i++) {
 				long a = System.currentTimeMillis();
 				System.out.print("Partida "+(i+1)+"  -->  ");
 				//z = new ZonaIntercambio(file);
 				
-				noGfx(i%2==1, ntbfea, oep);
+				noGfx(i%2==1, ntbfea, greedy);
 				
 				//z.close();
 				System.out.print("ntbfea("+tiempos[j]+") vs oep -->gana: "+gana+"   pierde: "+pierde+"   empata: "+empata);
