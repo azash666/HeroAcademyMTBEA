@@ -32,6 +32,7 @@ public class Ntbfea {
 	private double almostFullTimeWeight = .999;
 
 
+	// NOTE: In case of using threads, uncomment the "synchronized" of ExchangeZone.java
 	public int NUM_THREADS = 1;
 
 	private IStateEvaluator evaluator;
@@ -47,6 +48,11 @@ public class Ntbfea {
 		rand = new Random();
 		Ntbfea.iterations = new AtomicInteger(0);
 	}
+
+	
+	/*******************************************************/
+	/**      It sets new values for the time weights      **/
+	/*******************************************************/
 	
 	public Ntbfea setWeights(double evaluatorTimeWeight, double evolutionTimeWeight, double almostFullTimeWeight) {
 
@@ -58,6 +64,11 @@ public class Ntbfea {
 		Ntbfea.almostFullTime = (long)((double)budget*almostFullTimeWeight)+System.currentTimeMillis();
 		return this;
 	}
+
+	
+	/*******************************************************/
+	/**    It allows the use of a map to store actions    **/
+	/*******************************************************/
 	
 	public Ntbfea putUseOfActionMap(boolean useMap) {
 		this.useMap = useMap;

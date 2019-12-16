@@ -29,8 +29,7 @@ public class Prueba1 {
 		evaluator = new HeuristicEvaluator(false);
 		evaluator2 = new RolloutEvaluator(1, 1, new RandomAI(RAND_METHOD.TREE), new HeuristicEvaluator(false));
 		
-		AI ntbfea = new MyNtbfeaAgent(evaluator, 1000, 5, 50).putEvaluatorTime(.99).putName("Ntbfea");
-		AI ntbfea2 = new MyNtbfeaAgent(evaluator, 1000, 5, 50).putEvaluatorTime(1).disableActionMap().putName("Ntbfea 1");
+		AI ntbfea = new MyNtbfeaAgent(evaluator, 1000, 5, 50).putEvaluatorTime(.9).putName("Ntbfea");
 		AI oep = new OnlineEvolutionModificado(false, 45, .2, .1, 1000, evaluator);
 		AI greedy = new MyGreedyAgent(evaluator);
 		AI random = new MyRandomAgent();
@@ -38,8 +37,8 @@ public class Prueba1 {
 		
 		//humanVsHuman();
 		//humanVsAI(false);
-		//AIVsAI(false, greedy, ntbfea);
-		double max = .3;
+		AIVsAI(false, human, ntbfea);
+		/*double max = .3;
 		double min = .3;
 		double step = 0.05;
 		double tiempos[] = new double[(int) ((max-min)/step+1)];
@@ -56,11 +55,9 @@ public class Prueba1 {
 			for(int i=0; i<cantidad; i++) {
 				long a = System.currentTimeMillis();
 				System.out.print("Partida "+(i+1)+"  -->  ");
-				//z = new ZonaIntercambio(file);
 				
 				noGfx(i%2==1, ntbfea, greedy);
 				
-				//z.close();
 				System.out.print("ntbfea("+tiempos[j]+") vs oep -->gana: "+gana+"   pierde: "+pierde+"   empata: "+empata);
 				long b = System.currentTimeMillis()-a;
 				System.out.println("   Tiempo de la partida: "+b);

@@ -32,33 +32,46 @@ class ExchangeZone{
 		this.lModel = new LModel(5);
 		this.state = new GameState(state.map);
 		this.state.imitate(state);
-	//	this.evaluator = evaluator;
 	}
 
-	public /*synchronized*/ ExchangeZone putParents(List<Action[]> parents2) {
-		double peorPadre = this.lModel.eval(parents.get(Ntbfea.numParents-1));
-		for(Action[] a : parents2) {
-			double nuevoValor = this.lModel.eval(a);
-			
-			
-			if(nuevoValor>peorPadre) {
-				parents.remove(Ntbfea.numParents-1);
-				ListIterator<Action[]> iter = parents.listIterator();
-				int ind = 0;
-				while(iter.hasNext()) {
-					Action[] accion = iter.next();
-					double valor = this.lModel.eval(accion);
-					if(valor>nuevoValor) ind++;
+	
+	/*******************************************************/
+	/**   It puts a list of new parents in the list of    **/
+	/**   current parents and remains the best of them    **/
+	/*******************************************************/
+	/**          NOTE: In case of using threads,          **/
+	/**           uncomment the "synchronized"            **/
+	/*******************************************************/
+
+	public /*synchronized*/ ExchangeZone putParents(List<Action[]> newParents) {
+		double worstParentScore = this.lModel.eval(this.parents.get(Ntbfea.numParents-1));
+		for(Action[] newParent : newParents) {
+			double newParentScore = this.lModel.eval(newParent);
+			if(newParentScore>worstParentScore) {
+				this.parents.remove(Ntbfea.numParents-1);
+				ListIterator<Action[]> parentsIterator = this.parents.listIterator();
+				int index = 0;
+				//Sorting the parents
+				while(parentsIterator.hasNext()) {
+					Action[] parentActions = parentsIterator.next();
+					double parentScore = this.lModel.eval(parentActions);
+					if(parentScore>newParentScore) index++;
 					else break;
-				}if(!listContainsArray(parents, a)) {
-					parents.add(ind, a);
-					peorPadre = this.lModel.eval(parents.get(Ntbfea.numParents-1));
+				}if(!listContainsArray(this.parents, newParent)) {
+					this.parents.add(index, newParent);
+					worstParentScore = this.lModel.eval(this.parents.get(Ntbfea.numParents-1));
 				}
 			}
-			
 		}
 		return this;
 	}
+	
+	
+	/*******************************************************/
+	/**              It compares two arrays:              **/
+	/**        true if their contents are equals,         **/
+	/**                  false otherwise                  **/
+	/*******************************************************/
 	
 	private boolean arrayComarison(Action[] array1, Action[] array2) {
 		if(array1.length != array2.length) return false;
@@ -69,6 +82,12 @@ class ExchangeZone{
 		return true;
 	}
 	
+	
+	/*******************************************************/
+	/**            It says if a list of arrays            **/
+	/**            contains an specific array             **/
+	/*******************************************************/
+	
 	private boolean listContainsArray(List<Action[]> listOfArrays, Action[] array) {
 		for(Action[] elementOfTheList: listOfArrays) {
 			if(arrayComarison(elementOfTheList, array)) return true;
@@ -76,20 +95,51 @@ class ExchangeZone{
 		return false;
 	}
 
+	
+	/*******************************************************/
+	/**     It returns the current parents in a List      **/
+	/*******************************************************/
+	/**          NOTE: In case of using threads,          **/
+	/**           uncomment the "synchronized"            **/
+	/*******************************************************/
+
 	public /*synchronized*/ List<Action[]> getParents() {
-		List<Action[]> devolver = new LinkedList<Action[]>();
-		devolver.addAll(parents);
-		return devolver;
+		List<Action[]> newListOfParents = new LinkedList<Action[]>();
+		newListOfParents.addAll(parents);
+		return newListOfParents;
 	}
 
+	
+	/*******************************************************/
+	/**           It returns the current lModel           **/
+	/*******************************************************/
+	/**          NOTE: In case of using threads,          **/
+	/**           uncomment the "synchronized"            **/
+	/*******************************************************/
 
 	public /*synchronized*/ LModel getLModel() {
 		return lModel.copy();
 	}
 
+	
+	/*******************************************************/
+	/** It combines the current lModel with another one.  **/
+	/*******************************************************/
+	/**          NOTE: In case of using threads,          **/
+	/**           uncomment the "synchronized"            **/
+	/*******************************************************/
+
 	public /*synchronized*/ void update(LModel lModel) {
 		this.lModel.combineLModel(lModel);
 	}
+
+	
+	/*******************************************************/
+	/** It returns the best parent of the current lModel  **/
+	/*******************************************************/
+	/**          NOTE: In case of using threads,          **/
+	/**           uncomment the "synchronized"            **/
+	/*******************************************************/
 
 	public /*synchronized*/ Action[] getBest() {
 		
@@ -116,6 +166,14 @@ class ExchangeZone{
 		for(Action i: bestActions) copia.update(i);
 		return bestActions;
 	}
+
+	
+	/*******************************************************/
+	/**             It returns current state              **/
+	/*******************************************************/
+	/**          NOTE: In case of using threads,          **/
+	/**           uncomment the "synchronized"            **/
+	/*******************************************************/
 
 	public /*synchronized*/ GameState getState() {
 		return state;
